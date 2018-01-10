@@ -6,6 +6,44 @@
 using namespace std ; 
 #define delay 10000
 
+class snake_part
+{
+    public :
+    int x , y ; 
+
+    snake_part()
+    {
+        x = y = 0 ; 
+    }
+
+};
+
+
+void draw_border_window( int max_x , int max_y)
+{
+    for(int i =0 , j = 1 ; (i<max_x || j<max_y ) ; )
+    {
+        if(i<max_x)
+            mvprintw(0,i++,"--") ;
+
+        if(j<max_y)
+            mvprintw(j++ , 0 , "|") ; 
+    }
+
+    max_x -=1 ; max_y-=1 ; 
+    for(int i =max_x , j = max_y ; (i>0 || j>0) ; )
+    {
+        if(i>0)
+            mvprintw( max_y , i--  , "--") ; 
+
+        if(j>0)
+            mvprintw(j--,max_x  , "|") ; 
+        
+    }
+}
+
+
+
 int main(int argc , char * argv[]) 
 {
     initscr() ;
@@ -14,43 +52,24 @@ int main(int argc , char * argv[])
     
     float x= 0 , y =0 ; 
     int max_x  = 0 , max_y = 0  ;
-
-    int flag = 1 ,ch=97 ; //left = 0  ,   right = 1 ; 
-    // noecho() ;
+    getmaxyx(stdscr , max_y , max_x) ; 
     cbreak() ; 
     nodelay(stdscr , 1) ;
-    char prev_char = 'a' ; 
-
-    while(1){
-        clear() ;
-
-        mvprintw(10 , 0 , "Character : %c    , Code : %d" , prev_char , prev_char) ;
-        getmaxyx(stdscr , max_y , max_x) ; 
-        
-        mvprintw(y,x , "o" ) ;
-        refresh() ; 
-
-        
-        if(flag)
-            x++ ;
-        else
-            x--  ;
-        if(flag && x>max_x) 
-            flag = 0 ;
-        else if(x==0)
-            flag = 1 ;
-        
-        if((ch = getch())!=ERR)
-        {
-            prev_char = ch ; 
-            flag^=1 ; 
-        }
-        mvprintw(10 , 0 , "Character : %c    , Code : %d" , prev_char , prev_char) ;
-        usleep(delay) ; 
-    }
-
    
-    sleep(1) ; 
+
+
+    draw_border_window( max_x , max_y); 
+    refresh() ;
+
+
+
+
+
+
+
+
+
+    sleep(10) ; 
     endwin() ; 
 }
 
