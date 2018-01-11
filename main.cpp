@@ -15,23 +15,70 @@ class snake_part
     {
         x = xx ; y = yy ; 
     }
-
 };
+
+class snake
+{
+    private :
+    vector <snake_part> parts ;
+
+    public :
+    snake(void)
+    {
+        ;
+    }
+
+    void draw_snake(void)
+    {
+        for( int i =0 ; i<parts.size() ; i++)
+        {
+        mvprintw(parts[i].y  , parts[i].x , "o") ; 
+        }
+    
+    }
+
+    void add_part(int x , int y ) //adds the part object taking the coordinates to the end of the part vector in snake
+    {
+        snake_part obj(x , y) ; 
+        parts.push_back(obj) ; 
+    }
+
+    void move_snake(string direction)
+    {
+        parts.erase(parts.begin())  ;
+        snake_part last_part = parts.at(parts.size()-1) ;
+
+        if(direction=="right")
+        {
+            add_part(last_part.x+1  , last_part.y) ;
+        }
+
+        if(direction =="left") 
+        {
+            add_part(last_part.x-1 , last_part.y) ; 
+        }
+
+        if(direction =="up")
+        {
+            add_part(last_part.x , last_part.y-1) ;
+        }
+        if(direction=="down")
+        {
+            add_part(last_part.x , last_part.y+1) ;
+        }
+
+        draw_snake() ;
+        refresh() ; 
+    }
+
+   
+} ; 
+
+
 
 
 void draw_border_window(int  , int) ; 
-void draw_snake(vector <snake_part>) ; 
-
-
-
-void draw_snake(vector <snake_part> parts)
-{
-    for( int i =0 ; i<parts.size() ; i++)
-    {
-       mvprintw(parts[i].y  , parts[i].x , "o") ; 
-    }
-    refresh();
-}
+void draw_food(void) ; 
 
 
 void draw_border_window( int max_x , int max_y)
@@ -58,34 +105,49 @@ void draw_border_window( int max_x , int max_y)
 }
 
 
+void draw_food(void)
+{
+    ;
+}
+
+
+int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
+
 
 int main(int argc , char * argv[]) 
 {
+
     initscr() ; //Init screen 
     noecho() ; // Dont show any pressed char  
     curs_set(false) ; // Don't show the cursor 
-    
+    srand(time(NULL)) ;
+        
+
+
     float x= 0 , y =0 ; 
-    int max_x  = 0 , max_y = 0  ;
     getmaxyx(stdscr , max_y , max_x) ; 
     int center_x = max_x/2  , center_y = max_y/2 ; 
 
     cbreak() ; //Dont wait for enter to be pressed when using getch 
     nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
    
-   //Create the container and add the first 3 dots of the snake
-    vector <snake_part> parts ; 
-    snake_part p1(center_x , center_y)  , p2(center_x+1 ,center_y) , p3(center_x+2 , center_y) ; 
+    //Initialize the snake object
+    snake snk ;
 
-    parts.push_back(p1) ;
-    parts.push_back(p2) ; 
-    parts.push_back(p3) ; 
-
-
-    draw_border_window( max_x , max_y); 
-    draw_snake(parts) ; 
+   //add the first 3 dots to the snake 
+    snk.add_part(center_x , center_y) ; 
+    snk.add_part(center_x+1 , center_y) ; 
+    snk.add_part(center_x+2 , center_y) ; 
     
+    draw_border_window( max_x , max_y); 
+    snk.draw_snake() ;
 
+
+    for(int j = 0 ; j<10 ; j++)
+    {
+        snk.move_snake("right");
+        usleep(50000) ;
+    }
 
 
     refresh() ;
