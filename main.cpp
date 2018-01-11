@@ -45,6 +45,7 @@ class snake
 
     void move_snake(string direction)
     {
+        
         parts.erase(parts.begin())  ;
         snake_part last_part = parts.at(parts.size()-1) ;
 
@@ -127,7 +128,9 @@ int main(int argc , char * argv[])
     float x= 0 , y =0 ; 
     getmaxyx(stdscr , max_y , max_x) ; 
     int center_x = max_x/2  , center_y = max_y/2 ; 
+    char ch ; 
 
+    
     cbreak() ; //Dont wait for enter to be pressed when using getch 
     nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
    
@@ -142,10 +145,29 @@ int main(int argc , char * argv[])
     draw_border_window( max_x , max_y); 
     snk.draw_snake() ;
 
+    cout<<KEY_DOWN <<" "<< KEY_UP ;
+    sleep(100) ;
 
-    for(int j = 0 ; j<10 ; j++)
+
+    for(int j = 0 ; j<100000 ; j++)
     {
-        snk.move_snake("right");
+        if((ch = getch())!=ERR)
+        {
+            if(ch==27) //ANSI escape sequence for arrow keys starts with 27 91 and 65 66 67 68 for up down right left
+            {
+                getch() ; // clear and reject 91 from buffer
+                ch = getch() ;//Now store the actual value of arrow key pressed  
+            }
+            switch(ch)
+            {
+                case KEY_DOWN : snk.move_snake("down") ; break ; 
+                case KEY_UP : snk.move_snake("up") ; break ; 
+                case KEY_RIGHT : snk.move_snake("right") ; break ; 
+                case KEY_LEFT : snk.move_snake("left") ; break ; 
+            }
+        }
+        clear() ;
+        draw_border_window(max_x , max_y) ; 
         usleep(50000) ;
     }
 
