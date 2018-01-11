@@ -6,9 +6,6 @@
 using namespace std ; 
 #define delay 10000
 
-void draw_border_window(int  , int) ; 
-void draw_snake(vector <snake_part>) ; 
-
 class snake_part
 {
     public :
@@ -22,9 +19,18 @@ class snake_part
 };
 
 
-void draw_snake(vector <snake_part>)
-{
+void draw_border_window(int  , int) ; 
+void draw_snake(vector <snake_part>) ; 
 
+
+
+void draw_snake(vector <snake_part> parts)
+{
+    for( int i =0 ; i<parts.size() ; i++)
+    {
+       mvprintw(parts[i].y  , parts[i].x , "o") ; 
+    }
+    refresh();
 }
 
 
@@ -83,13 +89,6 @@ int main(int argc , char * argv[])
 
 
     refresh() ;
-
-
-
-
-
-
-
 
 
     sleep(10) ; 
