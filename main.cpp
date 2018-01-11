@@ -117,7 +117,7 @@ int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values
 
 int main(int argc , char * argv[]) 
 {
-
+    
     initscr() ; //Init screen 
     noecho() ; // Dont show any pressed char  
     curs_set(false) ; // Don't show the cursor 
@@ -145,11 +145,9 @@ int main(int argc , char * argv[])
     draw_border_window( max_x , max_y); 
     snk.draw_snake() ;
 
-    cout<<KEY_DOWN <<" "<< KEY_UP ;
-    sleep(100) ;
 
 
-    for(int j = 0 ; j<100000 ; j++)
+    for(;;)
     {
         if((ch = getch())!=ERR)
         {
@@ -157,19 +155,29 @@ int main(int argc , char * argv[])
             {
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed  
+                mvprintw(0 , 0 , "%c = %d" , ch , ch) ; 
             }
+
             switch(ch)
             {
-                case KEY_DOWN : snk.move_snake("down") ; break ; 
-                case KEY_UP : snk.move_snake("up") ; break ; 
-                case KEY_RIGHT : snk.move_snake("right") ; break ; 
-                case KEY_LEFT : snk.move_snake("left") ; break ; 
+                case 'A' : snk.move_snake("up") ; break ; 
+                case 'B': snk.move_snake("down") ; break ; 
+                case 'C': snk.move_snake("right") ; break ; 
+                case 'D': snk.move_snake("left") ; break ; 
             }
+
+
+            flushinp(); 
+            
         }
+
         clear() ;
+        snk.draw_snake() ;
         draw_border_window(max_x , max_y) ; 
         usleep(50000) ;
     }
+
+    
 
 
     refresh() ;
