@@ -6,15 +6,16 @@
 using namespace std ; 
 #define delay 10000
 
-//global variables for the program 
-int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
-food global_food ; 
-
-
 typedef struct food
 {
     int x,y ;
 }food ; 
+
+
+//global variables for the program 
+int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
+food global_food  = {0 , 0 }; 
+
 
 class snake_part
 {
@@ -31,6 +32,7 @@ class snake
 {
     private :
     vector <snake_part> parts ;
+    string snakeDirection  ;
 
     public :
     snake(void)
@@ -47,10 +49,14 @@ class snake
     
     }
 
-    void add_part(int x , int y ) //adds the part object taking the coordinates to the end of the part vector in snake
+    void add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
     {
         snake_part obj(x , y) ; 
-        parts.push_back(obj) ; 
+        if(direction=="right")
+            parts.push_back(obj) ; 
+
+        else if(direction=="left")
+            parts.insert(parts.begin() ,obj) ; 
     }
 
     void move_snake(string direction)
@@ -62,28 +68,53 @@ class snake
         if(direction=="right")
         {
             add_part(last_part.x+1  , last_part.y) ;
+            snakeDirection  = "right" ; 
+            
         }
 
-        if(direction =="left") 
+        else if(direction =="left") 
         {
             add_part(last_part.x-1 , last_part.y) ; 
+            snakeDirection = "left" ; 
         }
 
-        if(direction =="up")
+        else if(direction =="up")
         {
             add_part(last_part.x , last_part.y-1) ;
+            snakeDirection = "up" ; 
         }
-        if(direction=="down")
+        else if(direction=="down")
         {
             add_part(last_part.x , last_part.y+1) ;
+            snakeDirection = "down" ; 
         }
+
+        check_snake_overlap() ;
 
         draw_snake() ;
         refresh() ; 
     }
 
-   
-} ; 
+//Checks if the snake bites itself or not ! :D 
+    int check_snake_overlap()
+    {
+        int headX = getHeadX() , headY  = getHeadY() ; 
+        for(int i =0 ; i<parts.size()-1 ; i++)
+            if(parts[i].x==headX && parts[i].y==headY)
+                {
+                    clear() ;
+                    mvprintw(max_y/2 , max_x/2 -6 , "GAME IS OVER ! ") ;
+                    refresh() ; 
+                    sleep(5) ;
+                }
+    }
+    
+    int getHeadX(void){return parts.at(parts.size()-1).x;}
+    int getHeadY(void){return parts.at(parts.size()-1).y;}
+    string getDirection(void){return snakeDirection; }
+
+
+}; 
 
 
 
@@ -104,6 +135,7 @@ void draw_border_window( int max_x , int max_y)
     }
 
     max_x -=1 ; max_y-=1 ; 
+
     for(int i =max_x , j = max_y ; (i>0 || j>0) ; )
     {
         if(i>0)
@@ -116,7 +148,8 @@ void draw_border_window( int max_x , int max_y)
 }
 
 
-void generateFood(void)
+
+void generateFood()
 {
     int x = random()%max_x , y = random()%max_y  ; 
     if(!x)x = 2 ; 
@@ -124,6 +157,16 @@ void generateFood(void)
     mvprintw(y, x ,"#") ;   
     global_food.x = x ; 
     global_food.y = y ;
+}
+
+void printFood(string status="old")
+{
+    if(status=="new")
+        generateFood() ; 
+    
+    if(!global_food.x && !global_food.y)
+        generateFood() ; 
+    mvprintw(global_food.y, global_food.x ,"#") ;   
 }
 
 
@@ -160,7 +203,6 @@ int main(int argc , char * argv[])
     snk.draw_snake() ;
 
 
-
     for(;;)
     {
         if((ch = getch())!=ERR)
@@ -174,21 +216,27 @@ int main(int argc , char * argv[])
 
             switch(ch)
             {
-                case 'A' : snk.move_snake("up") ; break ; 
-                case 'B': snk.move_snake("down") ; break ; 
-                case 'C': snk.move_snake("right") ; break ; 
-                case 'D': snk.move_snake("left") ; break ; 
+                case 'A': if(snk.getDirection() !="down") snk.move_snake("up") ; break ; 
+                case 'B': if(snk.getDirection()!= "up")snk.move_snake("down") ; break ; 
+                case 'C': if(snk.getDirection()!="left")snk.move_snake("right") ; break ; 
+                case 'D': if(snk.getDirection()!="right")snk.move_snake("left") ; break ; 
             }
 
 
+            if(snk.getHeadX()==global_food.x && snk.getHeadY() == global_food.y)
+            {
+                snk.add_part(global_food.x , global_food.y ) ; 
+                printFood("new") ;
+            }
+
             flushinp(); 
-            
+
         }
 
         clear() ;
         snk.draw_snake() ;
         draw_border_window(max_x , max_y) ; 
-        generateFood() ; 
+        printFood() ;
         refresh() ;
         usleep(50000) ;
     }
