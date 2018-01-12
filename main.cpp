@@ -4,7 +4,6 @@
 #include<ncurses.h>
 
 using namespace std ; 
-#define delay 10000
 
 typedef struct food
 {
@@ -33,11 +32,12 @@ class snake
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
+    unsigned long int speed ; 
 
     public :
     snake(void)
     {
-        ;
+        speed = 40000 ; 
     }
 
     void draw_snake(void)
@@ -109,9 +109,12 @@ class snake
                 }
     }
     
+    unsigned long int setSpeed(unsigned long int s){speed = s>90000?90000:s ; return speed ; }
+
     int getHeadX(void){return parts.at(parts.size()-1).x;}
     int getHeadY(void){return parts.at(parts.size()-1).y;}
     string getDirection(void){return snakeDirection; }
+    long int getSpeed(void){return speed; }
 
 
 }; 
@@ -172,7 +175,7 @@ void printFood(string status="old")
 void charecter_code_testing_fun(void)
 {
     //CHARACTER CODE TESTING FUNTION
-    char prev_char ; 
+    char prev_char  ,ch  ; 
     for(;;)
     {
         ch = getch() ; 
@@ -243,17 +246,29 @@ int main(int argc , char * argv[])
                 }
 
             }
+           
 
             flushinp();
 
         }
+
+        //INcrease the snake speed
+        if(ch==45)
+        {
+            snk.setSpeed(snk.getSpeed()+3000) ;
+        }
+        //Decrease the snake speed
+        if(ch==43)
+            snk.setSpeed(snk.getSpeed()-3000); 
+        
+
 
         clear() ;
         snk.draw_snake() ;
         draw_border_window(max_x , max_y) ; 
         printFood() ;
         refresh() ;
-        usleep(50000) ;
+        usleep(snk.getSpeed()) ;
     }
 
     
