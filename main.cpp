@@ -71,11 +71,13 @@ class snake
     vector <snake_part> parts ;
     string snakeDirection  ;
     unsigned long int speed ; 
-    int score ; 
+    int score ;
+    char keyUp , keyDown , keyRight , keyLeft ; 
 
     public :
-    snake(void)
+    snake(char up , char down , char right , char left)
     {
+        keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
         speed = 40000 ;
         score = 0 ; 
     }
@@ -162,14 +164,11 @@ class snake
     void handleMovementKeyPress(char ch )
     {
   
-            switch(ch)
-            {
-                case 'A': if(getDirection() !="down") move_snake("up") ; break ; 
-                case 'B': if(getDirection()!= "up")move_snake("down") ; break ; 
-                case 'C': if(getDirection()!="left")move_snake("right") ; break ; 
-                case 'D': if(getDirection()!="right")move_snake("left") ; break ; 
-                default : return ; 
-            }
+        if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
+        else if(keyDown==ch){ if(getDirection()!= "up")move_snake("down") ; } 
+        else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
+        else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
+        else return ; 
 
 
             if(getHeadX()==global_food.x && getHeadY() == global_food.y)
@@ -178,8 +177,7 @@ class snake
                 setScore(getScore()+1) ; 
                 printFood("new") ;
             }
-
-        
+       
     }
 
     
@@ -320,7 +318,7 @@ int main(int argc , char * argv[])
 
    
     //Initialize the snake object
-    snake snk , snk1 ;
+    snake snk('A' , 'B', 'C', 'D') , snk1('w','s', 'd' , 'a') ;
 
    //add the first 3 dots to the snake 
     snk.add_part(center_x+5 , center_y) ; 
