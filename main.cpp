@@ -169,6 +169,20 @@ void printFood(string status="old")
     mvprintw(global_food.y, global_food.x ,"#") ;   
 }
 
+void charecter_code_testing_fun(void)
+{
+    //CHARACTER CODE TESTING FUNTION
+    char prev_char ; 
+    for(;;)
+    {
+        ch = getch() ; 
+        if(ch!=ERR) prev_char = ch ; 
+        mvprintw(10 , 10 , "Char = %c  : %d" , prev_char , prev_char) ; 
+        usleep(10000) ; 
+    }
+
+}
+
 
 
 
@@ -212,24 +226,25 @@ int main(int argc , char * argv[])
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed  
                 mvprintw(0 , 0 , "%c = %d" , ch , ch) ; 
+
+                switch(ch)
+                {
+                    case 'A': if(snk.getDirection() !="down") snk.move_snake("up") ; break ; 
+                    case 'B': if(snk.getDirection()!= "up")snk.move_snake("down") ; break ; 
+                    case 'C': if(snk.getDirection()!="left")snk.move_snake("right") ; break ; 
+                    case 'D': if(snk.getDirection()!="right")snk.move_snake("left") ; break ; 
+                }
+
+
+                if(snk.getHeadX()==global_food.x && snk.getHeadY() == global_food.y)
+                {
+                    snk.add_part(global_food.x , global_food.y ) ; 
+                    printFood("new") ;
+                }
+
             }
 
-            switch(ch)
-            {
-                case 'A': if(snk.getDirection() !="down") snk.move_snake("up") ; break ; 
-                case 'B': if(snk.getDirection()!= "up")snk.move_snake("down") ; break ; 
-                case 'C': if(snk.getDirection()!="left")snk.move_snake("right") ; break ; 
-                case 'D': if(snk.getDirection()!="right")snk.move_snake("left") ; break ; 
-            }
-
-
-            if(snk.getHeadX()==global_food.x && snk.getHeadY() == global_food.y)
-            {
-                snk.add_part(global_food.x , global_food.y ) ; 
-                printFood("new") ;
-            }
-
-            flushinp(); 
+            flushinp();
 
         }
 
