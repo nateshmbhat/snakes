@@ -44,6 +44,27 @@ class snake_part
 };
 
 
+void generateFood()
+{
+    int x = random()%max_x , y = random()%max_y  ; 
+    if(!x)x = 2 ; 
+    if(!y) y = 2 ; 
+    mvprintw(y, x ,"#") ;   
+    global_food.x = x ; 
+    global_food.y = y ;
+}
+
+void printFood(string status="old")
+{
+    if(status=="new")
+        generateFood() ; 
+    
+    if(!global_food.x && !global_food.y)
+        generateFood() ; 
+    mvprintw(global_food.y, global_food.x ,"#") ;   
+}
+
+
 class snake
 {
     private :
@@ -137,6 +158,30 @@ class snake
     {
         mvprintw(0 , 0 , "Score = %d" , score) ; 
     }
+
+    void handleMovementKeyPress(char ch )
+    {
+  
+            switch(ch)
+            {
+                case 'A': if(getDirection() !="down") move_snake("up") ; break ; 
+                case 'B': if(getDirection()!= "up")move_snake("down") ; break ; 
+                case 'C': if(getDirection()!="left")move_snake("right") ; break ; 
+                case 'D': if(getDirection()!="right")move_snake("left") ; break ; 
+                default : return ; 
+            }
+
+
+            if(getHeadX()==global_food.x && getHeadY() == global_food.y)
+            {
+                add_part(global_food.x , global_food.y ) ;
+                setScore(getScore()+1) ; 
+                printFood("new") ;
+            }
+
+        
+    }
+
     
     unsigned long int setSpeed(unsigned long int s){speed = s>90000?90000:s<10000?10000:s ; return speed ; }
 
@@ -181,25 +226,7 @@ void draw_border_window( int max_x , int max_y)
 
 
 
-void generateFood()
-{
-    int x = random()%max_x , y = random()%max_y  ; 
-    if(!x)x = 2 ; 
-    if(!y) y = 2 ; 
-    mvprintw(y, x ,"#") ;   
-    global_food.x = x ; 
-    global_food.y = y ;
-}
 
-void printFood(string status="old")
-{
-    if(status=="new")
-        generateFood() ; 
-    
-    if(!global_food.x && !global_food.y)
-        generateFood() ; 
-    mvprintw(global_food.y, global_food.x ,"#") ;   
-}
 
 void charecter_code_testing_fun(void)
 {
@@ -222,7 +249,7 @@ void printSpeed(snake snk)
 }
 
 
-void ask_no_players(string player="single")
+string ask_no_players(string player="single")
 {
     char ch ; 
 
@@ -247,8 +274,7 @@ void ask_no_players(string player="single")
 
         else if(ch==10)
         {
-            break ;  
-            return ; 
+            return player ; 
         }
 
     mvprintw(1 , 5 , " SINGLE PLAYER or") ;
@@ -288,21 +314,28 @@ int main(int argc , char * argv[])
     nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
 
     
-
-    ask_no_players() ;
-
+    //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
+    string no_players = ask_no_players() ;
+    
 
    
     //Initialize the snake object
-    snake snk ;
+    snake snk , snk1 ;
 
    //add the first 3 dots to the snake 
-    snk.add_part(center_x , center_y) ; 
-    snk.add_part(center_x+1 , center_y) ; 
-    snk.add_part(center_x+2 , center_y) ; 
+    snk.add_part(center_x+5 , center_y) ; 
+    snk.add_part(center_x+6 , center_y) ; 
+    snk.add_part(center_x+7 , center_y) ;
+
+    snk1.add_part(center_x-5 , center_y) ; 
+    snk1.add_part(center_x-6 , center_y) ; 
+    snk1.add_part(center_x-7 , center_y) ;
+
     
     // draw_border_window( max_x , max_y); 
     snk.draw_snake() ;
+    if(no_players=="multi")
+        snk1.draw_snake() ; 
 
 
     for(;;)
@@ -310,33 +343,20 @@ int main(int argc , char * argv[])
 
         if((ch = getch())!=ERR)
         {
-            if(ch==27) //ANSI escape sequence for arrow keys starts with 27 91 and 65 66 67 68 for up down right left
+            if(ch==27)
             {
                 getch() ; // clear and reject 91 from buffer
-                ch = getch() ;//Now store the actual value of arrow key pressed  
-                mvprintw(0 , 0 , "%c = %d" , ch , ch) ; 
-
-                switch(ch)
-                {
-                    case 'A': if(snk.getDirection() !="down") snk.move_snake("up") ; break ; 
-                    case 'B': if(snk.getDirection()!= "up")snk.move_snake("down") ; break ; 
-                    case 'C': if(snk.getDirection()!="left")snk.move_snake("right") ; break ; 
-                    case 'D': if(snk.getDirection()!="right")snk.move_snake("left") ; break ; 
-                }
-
-
-                if(snk.getHeadX()==global_food.x && snk.getHeadY() == global_food.y)
-                {
-                    snk.add_part(global_food.x , global_food.y ) ;
-                    snk.setScore(snk.getScore()+1) ; 
-                    printFood("new") ;
-                }
-
+                ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
+                snk.handleMovementKeyPress(ch) ; 
             }
-           
-            flushinp();
 
+            else if (no_players=="multi"){
+                snk1.handleMovementKeyPress(ch) ; 
+            }
         }
+
+
+        flushinp();
 
 
         //INcrease the snake speed
@@ -352,6 +372,7 @@ int main(int argc , char * argv[])
 
         clear() ;
         snk.draw_snake() ;
+        if(no_players=="multi") snk1.draw_snake() ;
         snk.printScore() ;
         // draw_border_window(max_x , max_y) ; 
         printSpeed(snk) ; 
