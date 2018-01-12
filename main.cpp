@@ -52,6 +52,7 @@ void generateFood()
     mvprintw(y, x ,"#") ;   
     global_food.x = x ; 
     global_food.y = y ;
+    flushinp();
 }
 
 void printFood(string status="old")
@@ -80,6 +81,7 @@ class snake
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
         speed = 40000 ;
         score = 0 ; 
+        snakeDirection = "right" ; 
     }
 
     int getScore(void){return score ; }
@@ -325,9 +327,9 @@ int main(int argc , char * argv[])
     snk.add_part(center_x+6 , center_y) ; 
     snk.add_part(center_x+7 , center_y) ;
 
-    snk1.add_part(center_x-5 , center_y) ; 
+    snk1.add_part(center_x-7 , center_y) ; 
     snk1.add_part(center_x-6 , center_y) ; 
-    snk1.add_part(center_x-7 , center_y) ;
+    snk1.add_part(center_x-5 , center_y) ;
 
     
     // draw_border_window( max_x , max_y); 
@@ -354,7 +356,6 @@ int main(int argc , char * argv[])
         }
 
 
-        flushinp();
 
 
         //INcrease the snake speed
@@ -379,7 +380,6 @@ int main(int argc , char * argv[])
         usleep(snk.getSpeed()) ;
     }
 
-    
 
 
     refresh() ;
