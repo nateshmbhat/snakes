@@ -16,6 +16,22 @@ int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values
 food global_food  = {0 , 0 }; 
 
 
+class player
+{
+    private:
+    int score ;
+
+    public:
+    int getScore(void){return score ; }
+    
+    void printScore(string pos = "left")
+    {
+        mvprintw(0 , 0 , "Score : %d" , score) ;  
+    }
+
+} ;
+
+
 class snake_part
 {
     public :
@@ -26,6 +42,7 @@ class snake_part
         x = xx ; y = yy ; 
     }
 };
+
 
 class snake
 {
@@ -42,11 +59,12 @@ class snake
 
     void draw_snake(void)
     {
-        for( int i =0 ; i<parts.size() ; i++)
+        int i ; 
+        for(  i =0 ; i<parts.size()-1 ; i++)
         {
-        mvprintw(parts[i].y  , parts[i].x , "o") ; 
+            mvprintw(parts[i].y  , parts[i].x , "o") ; 
         }
-    
+        mvprintw(parts[i].y  , parts[i].x , "+") ; 
     }
 
     void add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
@@ -109,7 +127,7 @@ class snake
                 }
     }
     
-    unsigned long int setSpeed(unsigned long int s){speed = s>90000?90000:s ; return speed ; }
+    unsigned long int setSpeed(unsigned long int s){speed = s>90000?90000:s<10000?10000:s ; return speed ; }
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
     int getHeadY(void){return parts.at(parts.size()-1).y;}
@@ -131,7 +149,7 @@ void draw_border_window( int max_x , int max_y)
     for(int i =0 , j = 1 ; (i<max_x || j<max_y ) ; )
     {
         if(i<max_x)
-            mvprintw(0,i++,"--") ;
+            mvprintw(1,i++,"--") ;
 
         if(j<max_y)
             mvprintw(j++ , 0 , "|") ; 
@@ -186,6 +204,12 @@ void charecter_code_testing_fun(void)
 
 }
 
+void printSpeed(snake snk)
+{
+    mvprintw(0 , max_x-20 , "Speed= %lu" ,snk.getSpeed()) ; 
+    refresh() ;
+}
+
 
 
 
@@ -222,6 +246,7 @@ int main(int argc , char * argv[])
 
     for(;;)
     {
+
         if((ch = getch())!=ERR)
         {
             if(ch==27) //ANSI escape sequence for arrow keys starts with 27 91 and 65 66 67 68 for up down right left
@@ -247,10 +272,10 @@ int main(int argc , char * argv[])
 
             }
            
-
             flushinp();
 
         }
+
 
         //INcrease the snake speed
         if(ch==45)
@@ -266,6 +291,7 @@ int main(int argc , char * argv[])
         clear() ;
         snk.draw_snake() ;
         draw_border_window(max_x , max_y) ; 
+        printSpeed(snk) ; 
         printFood() ;
         refresh() ;
         usleep(snk.getSpeed()) ;
