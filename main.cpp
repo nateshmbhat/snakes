@@ -140,6 +140,13 @@ class snake
 
         check_snake_overlap() ;
 
+        if(getHeadX()==global_food.x && getHeadY() == global_food.y)
+        {
+            add_part(global_food.x , global_food.y ) ;
+            setScore(getScore()+1) ; 
+            printFood("new") ;
+        }
+
         draw_snake() ;
         refresh() ; 
     }
@@ -158,8 +165,10 @@ class snake
                 }
     }
 
-    void printScore(void)
+    void printScore(string pos="left")
     {
+        if(pos=="right")
+            mvprintw(0 , 15, "Score = %d" , score) ; 
         mvprintw(0 , 0 , "Score = %d" , score) ; 
     }
 
@@ -173,12 +182,7 @@ class snake
         else return ; 
 
 
-            if(getHeadX()==global_food.x && getHeadY() == global_food.y)
-            {
-                add_part(global_food.x , global_food.y ) ;
-                setScore(getScore()+1) ; 
-                printFood("new") ;
-            }
+         
        
     }
 
@@ -353,25 +357,25 @@ int main(int argc , char * argv[])
             else if (no_players=="multi"){
                 snk1.handleMovementKeyPress(ch) ; 
             }
+
+
+            //INcrease the snake speed
+            if(ch==45)
+            {
+                snk.setSpeed(snk.getSpeed()+3000) ;
+            }
+            //Decrease the snake speed
+            if(ch==43)
+                snk.setSpeed(snk.getSpeed()-3000); 
+            
         }
 
-
-
-
-        //INcrease the snake speed
-        if(ch==45)
-        {
-            snk.setSpeed(snk.getSpeed()+3000) ;
-        }
-        //Decrease the snake speed
-        if(ch==43)
-            snk.setSpeed(snk.getSpeed()-3000); 
-        
 
 
         clear() ;
-        snk.draw_snake() ;
-        if(no_players=="multi") snk1.draw_snake() ;
+        // snk.draw_snake() ;
+        snk.move_snake(snk.getDirection())  ;
+        if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
         snk.printScore() ;
         // draw_border_window(max_x , max_y) ; 
         printSpeed(snk) ; 
