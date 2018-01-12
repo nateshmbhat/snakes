@@ -52,7 +52,6 @@ void generateFood()
     mvprintw(y, x ,"#") ;   
     global_food.x = x ; 
     global_food.y = y ;
-    flushinp();
 }
 
 void printFood(string status="old")
@@ -74,14 +73,16 @@ class snake
     unsigned long int speed ; 
     int score ;
     char keyUp , keyDown , keyRight , keyLeft ; 
+    int id ; 
 
     public :
-    snake(char up , char down , char right , char left)
+    snake(char up , char down , char right , char left , int id )
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
-        speed = 40000 ;
+        speed = 70000 ;
         score = 0 ; 
         snakeDirection = "right" ; 
+        id = id ; 
     }
 
     int getScore(void){return score ; }
@@ -154,15 +155,16 @@ class snake
 //Checks if the snake bites itself or not ! :D 
     int check_snake_overlap()
     {
-        int headX = getHeadX() , headY  = getHeadY() ; 
-        for(int i =0 ; i<parts.size()-1 ; i++)
-            if(parts[i].x==headX && parts[i].y==headY)
-                {
-                    clear() ;
-                    mvprintw(max_y/2 , max_x/2 -6 , "GAME IS OVER ! ") ;
-                    refresh() ; 
-                    sleep(5) ;
-                }
+    int headX = getHeadX() , headY  = getHeadY() ; 
+    for(int i =0 ; i<parts.size()-1 ; i++)
+        if(parts[i].x==headX && parts[i].y==headY)
+            {
+
+                clear() ;
+                mvprintw(max_y/2 , max_x/2 -20 , "GAME OVER for Player %d !" , id) ;
+                refresh() ; 
+                sleep(50000) ;
+            }
     }
 
     void printScore(string pos="left")
@@ -187,7 +189,7 @@ class snake
     }
 
     
-    unsigned long int setSpeed(unsigned long int s){speed = s>90000?90000:s<10000?10000:s ; return speed ; }
+    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; }
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
     int getHeadY(void){return parts.at(parts.size()-1).y;}
@@ -324,7 +326,7 @@ int main(int argc , char * argv[])
 
    
     //Initialize the snake object
-    snake snk('A' , 'B', 'C', 'D') , snk1('w','s', 'd' , 'a') ;
+    snake snk('A' , 'B', 'C', 'D' , 0 ) , snk1('w','s', 'd' , 'a' , 1) ;
 
    //add the first 3 dots to the snake 
     snk.add_part(center_x+5 , center_y) ; 
@@ -372,6 +374,7 @@ int main(int argc , char * argv[])
 
 
 
+        flushinp();
         clear() ;
         // snk.draw_snake() ;
         snk.move_snake(snk.getDirection())  ;
