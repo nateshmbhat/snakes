@@ -132,6 +132,11 @@ class snake
                     sleep(5) ;
                 }
     }
+
+    void printScore(void)
+    {
+        mvprintw(0 , 0 , "Score = %d" , score) ; 
+    }
     
     unsigned long int setSpeed(unsigned long int s){speed = s>90000?90000:s<10000?10000:s ; return speed ; }
 
@@ -217,6 +222,50 @@ void printSpeed(snake snk)
 }
 
 
+void ask_no_players(string player="single")
+{
+    char ch ; 
+
+    for(;;)
+    {
+        ch = getch() ; 
+        if(ch==27)
+        {
+            clear() ; 
+            getch() ; 
+            ch = getch() ; 
+            if(ch=='A')
+            {
+                player="single" ; 
+            }
+
+            else if(ch=='B')
+            {
+                player="multi" ; 
+            }
+        }
+
+        else if(ch==10)
+        {
+            break ;  
+            return ; 
+        }
+
+    mvprintw(1 , 5 , " SINGLE PLAYER or") ;
+    mvprintw(1 +1, 5 , " MULTI PLAYER ? ") ;
+
+    if(player=="single")
+        mvprintw(1 , 2 , ">>>") ; 
+    else if(player=="multi")
+        mvprintw(2 , 2, ">>>") ; 
+    
+    refresh() ; 
+    usleep(20000) ; 
+    clear() ;
+
+    }
+}
+
 
 
 int main(int argc , char * argv[]) 
@@ -237,6 +286,12 @@ int main(int argc , char * argv[])
     
     cbreak() ; //Dont wait for enter to be pressed when using getch 
     nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
+
+    
+
+    ask_no_players() ;
+
+
    
     //Initialize the snake object
     snake snk ;
@@ -297,6 +352,7 @@ int main(int argc , char * argv[])
 
         clear() ;
         snk.draw_snake() ;
+        snk.printScore() ;
         // draw_border_window(max_x , max_y) ; 
         printSpeed(snk) ; 
         printFood() ;
