@@ -6,6 +6,16 @@
 using namespace std ; 
 #define delay 10000
 
+//global variables for the program 
+int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
+food global_food ; 
+
+
+typedef struct food
+{
+    int x,y ;
+}food ; 
+
 class snake_part
 {
     public :
@@ -106,13 +116,17 @@ void draw_border_window( int max_x , int max_y)
 }
 
 
-void draw_food(void)
+void generateFood(void)
 {
-    ;
+    int x = random()%max_x , y = random()%max_y  ; 
+    if(!x)x = 2 ; 
+    if(!y) y = 2 ; 
+    mvprintw(y, x ,"#") ;   
+    global_food.x = x ; 
+    global_food.y = y ;
 }
 
 
-int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
 
 
 int main(int argc , char * argv[]) 
@@ -174,6 +188,8 @@ int main(int argc , char * argv[])
         clear() ;
         snk.draw_snake() ;
         draw_border_window(max_x , max_y) ; 
+        generateFood() ; 
+        refresh() ;
         usleep(50000) ;
     }
 
