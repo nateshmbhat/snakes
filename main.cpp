@@ -50,12 +50,17 @@ class snake
     vector <snake_part> parts ;
     string snakeDirection  ;
     unsigned long int speed ; 
+    int score ; 
 
     public :
     snake(void)
     {
-        speed = 40000 ; 
+        speed = 40000 ;
+        score = 0 ; 
     }
+
+    int getScore(void){return score ; }
+    int setScore(int s){score = s ; return score ; }
 
     void draw_snake(void)
     {
@@ -77,6 +82,7 @@ class snake
             parts.insert(parts.begin() ,obj) ; 
     }
 
+
     void move_snake(string direction)
     {
         
@@ -85,25 +91,25 @@ class snake
 
         if(direction=="right")
         {
-            add_part(last_part.x+1  , last_part.y) ;
+            add_part((last_part.x+1)%max_x  , last_part.y) ;
             snakeDirection  = "right" ; 
             
         }
 
         else if(direction =="left") 
         {
-            add_part(last_part.x-1 , last_part.y) ; 
+            add_part((last_part.x-1)<0?max_x-1:(last_part.x-1) , last_part.y) ; 
             snakeDirection = "left" ; 
         }
 
         else if(direction =="up")
         {
-            add_part(last_part.x , last_part.y-1) ;
+            add_part(last_part.x , (last_part.y-1)<0?max_y-1:(last_part.y-1)) ;
             snakeDirection = "up" ; 
         }
         else if(direction=="down")
         {
-            add_part(last_part.x , last_part.y+1) ;
+            add_part(last_part.x , (last_part.y+1)%max_y) ;
             snakeDirection = "down" ; 
         }
 
@@ -240,7 +246,7 @@ int main(int argc , char * argv[])
     snk.add_part(center_x+1 , center_y) ; 
     snk.add_part(center_x+2 , center_y) ; 
     
-    draw_border_window( max_x , max_y); 
+    // draw_border_window( max_x , max_y); 
     snk.draw_snake() ;
 
 
@@ -266,7 +272,8 @@ int main(int argc , char * argv[])
 
                 if(snk.getHeadX()==global_food.x && snk.getHeadY() == global_food.y)
                 {
-                    snk.add_part(global_food.x , global_food.y ) ; 
+                    snk.add_part(global_food.x , global_food.y ) ;
+                    snk.setScore(snk.getScore()+1) ; 
                     printFood("new") ;
                 }
 
@@ -290,7 +297,7 @@ int main(int argc , char * argv[])
 
         clear() ;
         snk.draw_snake() ;
-        draw_border_window(max_x , max_y) ; 
+        // draw_border_window(max_x , max_y) ; 
         printSpeed(snk) ; 
         printFood() ;
         refresh() ;
