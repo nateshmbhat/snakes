@@ -309,7 +309,6 @@ int main(int argc , char * argv[])
     srand(time(NULL)) ;
         
 
-
     float x= 0 , y =0 ; 
     getmaxyx(stdscr , max_y , max_x) ; 
     int center_x = max_x/2  , center_y = max_y/2 ; 
@@ -323,26 +322,58 @@ int main(int argc , char * argv[])
     //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
     string no_players = ask_no_players() ;
     
-
    
     //Initialize the snake object
-    snake snk('A' , 'B', 'C', 'D' , 0 ) , snk1('w','s', 'd' , 'a' , 1) ;
+    int number_of_players = 1 ;
+    vector <snake> allSnakes ;
+    snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
+
+
+//NORMAL BEHAVIOUR FOR INPUT
+    // echo() ; 
+    // nodelay(stdscr , 0);
+    // nocbreak() ;
+    endwin() ;
+
+    if(no_players=="multi")
+        {
+            cout<<"Enter the number of players : "  ; 
+            cin>> number_of_players ;
+        }
+
+
+    for(int i =1 ; i<number_of_players ; i++)
+    {
+
+        char left , right , up , down ; 
+        cout<<"Player "<<i<<" = Enter the key for Left Right Up Down  : " ;
+        cin>>left >>right >>up >>down ; 
+
+        snake snk(up , down , right , left , 1) ;
+        allSnakes.push_back(snk) ;
+
+    }
+
+    initscr() ;
+    noecho() ; 
+    nodelay(stdscr , 1) ; 
+    cbreak() ;
+
+//END OF NORMAL BEHAVIOUR
+
+
 
    //add the first 3 dots to the snake 
-    snk.add_part(center_x+5 , center_y) ; 
-    snk.add_part(center_x+6 , center_y) ; 
-    snk.add_part(center_x+7 , center_y) ;
+    for(int i =0; i<allSnakes.size(); i++)
+    {
 
-    snk1.add_part(center_x-7 , center_y) ; 
-    snk1.add_part(center_x-6 , center_y) ; 
-    snk1.add_part(center_x-5 , center_y) ;
-
+        allSnakes[i].add_part(center_x+5 , center_y) ; 
+        allSnakes[i].add_part(center_x+6 , center_y) ; 
+        allSnakes[i].add_part(center_x+7 , center_y) ;
+        allSnakes[i].draw_snake() ;
+    }
     
     // draw_border_window( max_x , max_y); 
-    snk.draw_snake() ;
-    if(no_players=="multi")
-        snk1.draw_snake() ; 
-
 
     for(;;)
     {
@@ -353,22 +384,25 @@ int main(int argc , char * argv[])
             {
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
-                snk.handleMovementKeyPress(ch) ; 
+                allSnakes[0].handleMovementKeyPress(ch) ; 
             }
 
             else if (no_players=="multi"){
-                snk1.handleMovementKeyPress(ch) ; 
+                for(int i =1 ; i<allSnakes.size() ; i++)
+                {
+                    allSnakes[i].handleMovementKeyPress(ch) ; 
+                }
             }
 
 
             //INcrease the snake speed
             if(ch==45)
             {
-                snk.setSpeed(snk.getSpeed()+3000) ;
+                allSnakes[0].setSpeed(allSnakes[0].getSpeed()+3000) ;
             }
             //Decrease the snake speed
             if(ch==43)
-                snk.setSpeed(snk.getSpeed()-3000); 
+                allSnakes[0].setSpeed(allSnakes[0].getSpeed()-3000); 
             
         }
 
@@ -376,15 +410,21 @@ int main(int argc , char * argv[])
 
         flushinp();
         clear() ;
-        // snk.draw_snake() ;
-        snk.move_snake(snk.getDirection())  ;
-        if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
-        snk.printScore() ;
-        // draw_border_window(max_x , max_y) ; 
-        printSpeed(snk) ; 
+
+        for(int i =0 ; i<allSnakes.size() ; i++)
+        {
+            snake snk_obj = allSnakes[i] ; 
+            snk_obj.move_snake(snk_obj.getDirection()) ;
+        }
+
+
+        // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
+        // snk.printScore() ;
+        // // draw_border_window(max_x , max_y) ; 
+        // printSpeed(snk) ; 
         printFood() ;
         refresh() ;
-        usleep(snk.getSpeed()) ;
+        usleep(allSnakes[0].getSpeed()) ;
     }
 
 
