@@ -414,8 +414,7 @@ int main(int argc , char * argv[])
 
         for(int i =0 ; i<allSnakes.size() ; i++)
         {
-            snake snk_obj = allSnakes[i] ; 
-            snk_obj.move_snake(snk_obj.getDirection()) ;
+            allSnakes[i].move_snake(allSnakes[i].getDirection()) ;
         }
 
 
