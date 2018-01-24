@@ -327,6 +327,7 @@ int main(int argc , char * argv[])
     int number_of_players = 1 ;
     vector <snake> allSnakes ;
     snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
+    allSnakes.push_back(first_snake) ;
 
 
 //NORMAL BEHAVIOUR FOR INPUT
@@ -349,7 +350,7 @@ int main(int argc , char * argv[])
         cout<<"Player "<<i<<" = Enter the key for Left Right Up Down  : " ;
         cin>>left >>right >>up >>down ; 
 
-        snake snk(up , down , right , left , 1) ;
+        snake snk(up , down , right , left , i) ;
         allSnakes.push_back(snk) ;
 
     }
@@ -421,7 +422,7 @@ int main(int argc , char * argv[])
         // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
         // snk.printScore() ;
         // // draw_border_window(max_x , max_y) ; 
-        // printSpeed(snk) ; 
+        printSpeed(allSnakes[0]) ; 
         printFood() ;
         refresh() ;
         usleep(allSnakes[0].getSpeed()) ;
