@@ -5,31 +5,79 @@
 
 using namespace std ; 
 
-typedef struct food
-{
-    int x,y ;
-}food ; 
-
 
 //global variables for the program 
 int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
-food global_food  = {0 , 0 }; 
 
 
-class player
+typedef struct food
+{
+    int x,y ;
+    char foodChar ;
+}food ; 
+
+
+class Game 
 {
     private:
-    int score ;
+    int noOfPlayers ;
+    food foodObj ;
 
     public:
-    int getScore(void){return score ; }
-    
-    void printScore(string pos = "left")
-    {
-        mvprintw(0 , 0 , "Score : %d" , score) ;  
-    }
 
-} ;
+    Game(int players = 1 )
+    {
+        noOfPlayers= players ; 
+        foodObj.x  = foodObj.y = 0 ;
+    }
+    
+    void generateFood() ; 
+    void printFood(string ) ;
+    void setFoodPos(int , int) ;
+    int getFoodX()
+    {return foodObj.x ; }
+    int getFoodY()
+    {return foodObj.y; }
+    food getFoodPos() ;
+    int getNoOfPlayers(){return noOfPlayers ; }
+    void setNoOfPlayers(int n){noOfPlayers  = n ; }
+};
+Game GameObj(1) ;
+
+//Setter method to set the position of food 
+void Game::setFoodPos(int x , int y)
+{
+   foodObj.x = x ; 
+   foodObj.y = y ;  
+}
+
+//Returns food obj with a copy of data of foodObj member of game class
+food Game::getFoodPos()
+{
+    food obj = foodObj ;
+    return obj ;
+}
+
+
+void Game::generateFood()
+{
+    int x = random()%max_x , y = random()%max_y  ; 
+    if(!x)x = 2 ; 
+    if(!y) y = 2 ; 
+    mvprintw(y, x ,"#") ;   
+    GameObj.setFoodPos(x , y) ;
+}
+
+void Game::printFood(string status="old")
+{
+    if(status=="new")
+        GameObj.generateFood() ; 
+    
+    if(!GameObj.getFoodX() && !GameObj.getFoodY())
+        generateFood() ; 
+    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
+}
+
 
 
 class snake_part
@@ -43,26 +91,6 @@ class snake_part
     }
 };
 
-
-void generateFood()
-{
-    int x = random()%max_x , y = random()%max_y  ; 
-    if(!x)x = 2 ; 
-    if(!y) y = 2 ; 
-    mvprintw(y, x ,"#") ;   
-    global_food.x = x ; 
-    global_food.y = y ;
-}
-
-void printFood(string status="old")
-{
-    if(status=="new")
-        generateFood() ; 
-    
-    if(!global_food.x && !global_food.y)
-        generateFood() ; 
-    mvprintw(global_food.y, global_food.x ,"#") ;   
-}
 
 
 class snake
@@ -141,11 +169,11 @@ class snake
 
         check_snake_overlap() ;
 
-        if(getHeadX()==global_food.x && getHeadY() == global_food.y)
+        if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
         {
-            add_part(global_food.x , global_food.y ) ;
+            add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
             setScore(getScore()+1) ; 
-            printFood("new") ;
+            GameObj.printFood("new") ;
         }
 
         draw_snake() ;
@@ -182,10 +210,7 @@ class snake
         else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
         else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
         else return ; 
-
-
-         
-       
+      
     }
 
     
@@ -419,15 +444,14 @@ int main(int argc , char * argv[])
 
 
         // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
-        // snk.printScore() ;
         // // draw_border_window(max_x , max_y) ; 
         printSpeed(allSnakes[0]) ; 
-        printFood() ;
+        GameObj.printFood() ;
         refresh() ;
         usleep(allSnakes[0].getSpeed()) ;
     }
 
-
+    
 
     refresh() ;
 
