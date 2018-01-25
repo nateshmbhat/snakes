@@ -363,6 +363,7 @@ int main(int argc , char * argv[])
 
     if(no_players=="multi")
         {
+            system("clear")  ;
             cout<<"Enter the number of players : "  ; 
             cin>> number_of_players ;
         }
