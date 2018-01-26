@@ -386,14 +386,14 @@ int main(int argc , char * argv[])
     nodelay(stdscr , 1) ; 
     cbreak() ;
 
-//END OF NORMAL BEHAVIOUR
 
+
+//END OF NORMAL BEHAVIOUR
 
 
    //add the first 3 dots to the snake 
     for(int i =0; i<allSnakes.size(); i++)
     {
-
         allSnakes[i].add_part(center_x+5 , center_y) ; 
         allSnakes[i].add_part(center_x+6 , center_y) ; 
         allSnakes[i].add_part(center_x+7 , center_y) ;
@@ -452,14 +452,8 @@ int main(int argc , char * argv[])
         usleep(allSnakes[0].getSpeed()) ;
     }
 
-    
-
     refresh() ;
-
 
     sleep(10) ; 
     endwin() ; 
 }
-
-
-
