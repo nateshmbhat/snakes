@@ -19,12 +19,13 @@ using namespace std ;
 
 class socketHandler{
 
-    public : 
-
     struct sockaddr_in address;
     struct sockaddr_in serv_addr;
     int sock , valread;
     char buffer[1024]  ; 
+
+    public : 
+
     //initialise all client_socket[] to 0 so not checked 
     socketHandler(void)
     {
@@ -42,10 +43,17 @@ class socketHandler{
     //creates and assigns the fd value to sock member
     void createClientSocket(void)
     {
+        int opt= 1 ;
         sock = socket(AF_INET , SOCK_STREAM , 0) ;
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         {
             printf("\n Socket creation error \n");
+        }
+
+        if (setsockopt(sock , SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+        {
+            perror("setsockopt");
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -62,8 +70,11 @@ class socketHandler{
         }
     }
 
-    int connectToServer()
+    int connectToServer(string address , int port)
     {
+        createClientSocket() ; 
+        initServerAddress(address , port) ; 
+
         if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
             printf("\nConnection Failed \n");
@@ -83,17 +94,21 @@ class socketHandler{
             cout<<"\nNo message from server yet :( " ; 
         }
     }
+
+    void closeSocket()
+    {
+        close(sock) ; 
+    }
 };
 
 int main(int argc , char *argv[])  
 {  
 
     socketHandler sock_obj ; 
-    sock_obj.createClientSocket() ; 
-    sock_obj.initServerAddress("127.0.0.1" , 8888) ; 
-    sock_obj.connectToServer() ; 
+    sock_obj.connectToServer("127.0.0.1" , 8888) ; 
     sock_obj.sendData("Hello its me ! ") ; 
     sock_obj.readData() ; 
+    sock_obj.closeSocket() ;
         
     return 0;  
 }  
