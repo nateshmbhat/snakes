@@ -127,7 +127,7 @@ int main(int argc , char *argv[])
                   (address.sin_port));  
           
             //send new connection greeting message 
-            if( send(new_socket, message, strlen(message), 0) != strlen(message) )  
+            if( send(new_socket, message, strlen(message),  MSG_NOSIGNAL) != strlen(message) )  
             {  
                 perror("send");  
             }  
