@@ -16,8 +16,8 @@ using namespace std ;
 #define FALSE  0 
 #define PORT 8888 
 
-int main(int argc , char *argv[])  
-{  
+class socketHandler{
+
     int opt = TRUE;  
     int master_socket , addrlen , new_socket , client_socket[30] , 
           max_clients = 30 , activity, i , valread , sd;  
@@ -31,6 +31,90 @@ int main(int argc , char *argv[])
         
     //a message 
     char *message = "ECHO Daemon v1.0 \r\n";  
+
+    public : 
+
+    //initialise all client_socket[] to 0 so not checked 
+    socketHandler(void)
+    {
+        max_clients = 30 ; 
+        valread = 0 ; 
+        memset(&address, '0', sizeof(address));
+        memset(buffer , 0 ,sizeof(buffer)) ; 
+    }
+
+    void sendData(string message)
+    {
+        send(sock , message.c_str() , message.length() , 0 );
+        cout<<"Message sent : " << message ; 
+    }
+
+    //creates and assigns the fd value to sock member
+    void createClientSocket(void)
+    {
+        int opt= 1 ;
+        sock = socket(AF_INET , SOCK_STREAM , 0) ;
+        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        {
+            printf("\n Socket creation error \n");
+        }
+
+        if (setsockopt(sock , SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+        {
+            perror("setsockopt");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    void initServerAddress(string address , int port )
+    {
+    
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(port);
+        
+        // Convert IPv4 and IPv6 addresses from text to binary form
+        if(inet_pton(AF_INET,address.c_str(), &serv_addr.sin_addr)<=0) 
+        {
+            printf("\nInvalid address/ Address not supported \n");
+        }
+    }
+
+    int connectToServer(string address , int port)
+    {
+        createClientSocket() ; 
+        initServerAddress(address , port) ; 
+
+        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            printf("\nConnection Failed \n");
+        }
+    }
+
+    void readData()
+    {
+
+        valread = read( sock , buffer, 1024);
+        if(valread>0)
+        {
+            cout<<"\nMessage received : " << buffer ;     
+        }
+        else
+        {
+            cout<<"\nNo message from server yet :( " ; 
+        }
+    }
+
+    void closeSocket()
+    {
+        close(sock) ; 
+    }
+};
+
+
+
+int main(int argc , char *argv[])  
+{  
+    
     
     //initialise all client_socket[] to 0 so not checked 
     for (i = 0; i < max_clients; i++)  
@@ -104,7 +188,9 @@ int main(int argc , char *argv[])
     
         //wait for an activity on one of the sockets , timeout is NULL , 
         //so wait indefinitely 
+        puts("\nBefore select : \n") ; 
         activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);  
+        printf("\nSelect returned : %d \n" , activity) ; 
       
         if ((activity < 0) && (errno!=EINTR))  
         {  
@@ -115,6 +201,7 @@ int main(int argc , char *argv[])
         //then its an incoming connection 
         if (FD_ISSET(master_socket, &readfds))  
         {  
+            puts("\nInside FD_ISSET master_socket") ; 
             if ((new_socket = accept(master_socket, 
                     (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)  
             {  
@@ -148,6 +235,7 @@ int main(int argc , char *argv[])
             }  
         }  
             
+
         //else its some IO operation on some other socket
         for (i = 0; i < max_clients; i++)  
         {  
@@ -157,7 +245,8 @@ int main(int argc , char *argv[])
             {  
                 //Check if it was for closing , and also read the 
                 //incoming message 
-                if ((valread = read( sd , buffer, 1024)) == 0)  
+                printf("\nFD_ISSET inside the IO operation handler : sd : %d\n" , sd)  ;
+                if ((valread = read( sd , buffer, 1024)) <= 0)  
                 {  
                     //Somebody disconnected , get his details and print 
                     getpeername(sd , (struct sockaddr*)&address , \
@@ -173,6 +262,7 @@ int main(int argc , char *argv[])
                 //Echo back the message that came in 
                 else
                 {  
+                    printf("\nread returned  : %d" ,valread) ; 
                     //set the string terminating NULL byte on the end 
                     //of the data read 
                     buffer[valread] = '\0';  
@@ -180,6 +270,9 @@ int main(int argc , char *argv[])
                 }  
             }  
         }  
+    
+    cout<<"\nSleeping for 2 seconds : \n" ; 
+    sleep(2) ; 
     }  
         
     return 0;  
