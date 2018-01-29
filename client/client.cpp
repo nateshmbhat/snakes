@@ -460,16 +460,8 @@ int main(int argc , char * argv[])
             {
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
-                allSnakes[0].handleMovementKeyPress(ch) ; 
+                first_snake.handleMovementKeyPress(ch) ; 
             }
-
-            else if (no_players=="multi"){
-                for(int i =1 ; i<allSnakes.size() ; i++)
-                {
-                    allSnakes[i].handleMovementKeyPress(ch) ; 
-                }
-            }
-
 
             //INcrease the snake speed
             // if(ch==45)
@@ -485,13 +477,10 @@ int main(int argc , char * argv[])
         flushinp();
         clear() ;
 
-        for(int i =0 ; i<allSnakes.size() ; i++)
-        {
-            allSnakes[i].move_snake(allSnakes[i].getDirection()) ;
-        }
+        first_snake.move_snake(first_snake.getDirection()) ;
 
 
-        printSpeed(allSnakes[0]) ; 
+        printSpeed(first_snake) ; 
         GameObj.printFood() ;
         refresh() ;
         usleep(allSnakes[0].getSpeed()) ;
