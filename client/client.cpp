@@ -122,6 +122,7 @@ class Game
     private:
     int noOfPlayers ;
     food foodObj ;
+    int center_x , center_y; 
 
     public:
 
@@ -138,9 +139,12 @@ class Game
     {return foodObj.x ; }
     int getFoodY()
     {return foodObj.y; }
+    int getCenterX(){return center_x ; }
+    int getCenterY(){return center_y ; }
     food getFoodPos() ;
     int getNoOfPlayers(){return noOfPlayers ; }
     void setNoOfPlayers(int n){noOfPlayers  = n ; }
+    void initConsoleScreen(string ) ; 
 };
 Game GameObj(1) ;
 
@@ -149,6 +153,29 @@ void Game::setFoodPos(int x , int y)
 {
    foodObj.x = x ; 
    foodObj.y = y ;  
+}
+
+//Initialise the console with the decision to turn off or on the enter key and cursor
+void Game::initConsoleScreen(string state)
+{
+    if(state=="on")
+    {
+        initscr() ; //Init screen 
+        noecho() ; // Dont show any pressed char  
+        curs_set(false) ; // Don't show the cursor 
+            
+
+        getmaxyx(stdscr , max_y , max_x) ; 
+        center_x = max_x/2  , center_y = max_y/2 ; 
+        
+        cbreak() ; //Dont wait for enter to be pressed when using getch 
+        nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
+
+    }
+
+    else if(state=="off"){
+        endwin() ; 
+    }
 }
 
 //Returns food obj with a copy of data of foodObj member of game class
@@ -236,7 +263,13 @@ class snake
             parts.insert(parts.begin() ,obj) ; 
     }
 
+    //called to make the snake appear on the screen for the first time 
+    void init_snake_on_screen()
+    {
 
+    }
+
+    //Used to move the snake in the given direction 
     void move_snake(string direction)
     {
         
@@ -321,7 +354,6 @@ class snake
     string getDirection(void){return snakeDirection; }
     long int getSpeed(void){return speed; }
 
-
 }; 
 
 
@@ -382,36 +414,24 @@ void printSpeed(snake snk)
 
 
 
+
 int main(int argc , char * argv[]) 
 {
+
+    srand(time(NULL)) ;
     system("clear") ;     
     socketHandler sock_obj ; 
     string serverAddress ; 
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
 
-    initscr() ; //Init screen 
-    noecho() ; // Dont show any pressed char  
-    curs_set(false) ; // Don't show the cursor 
-    srand(time(NULL)) ;
-        
-
-    float x= 0 , y =0 ; 
-    getmaxyx(stdscr , max_y , max_x) ; 
-    int center_x = max_x/2  , center_y = max_y/2 ; 
-    char ch ; 
+    GameObj.initConsoleScreen("on") ; 
 
     
-    cbreak() ; //Dont wait for enter to be pressed when using getch 
-    nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
-
-
     //Set some socket options
     sock_obj.connectToServer( serverAddress , 8888) ; 
     // sock_obj.sendData("Hello its me ! ") ; 
     // sock_obj.readData() ; 
-
-
 
     
     //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
@@ -424,19 +444,13 @@ int main(int argc , char * argv[])
     snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
     allSnakes.push_back(first_snake) ;
 
+    
 
-
-   //add the first 3 dots to the snake 
-    for(int i =0; i<allSnakes.size(); i++)
-    {
-        allSnakes[i].add_part(center_x+5 , center_y) ; 
-        allSnakes[i].add_part(center_x+6 , center_y) ; 
-        allSnakes[i].add_part(center_x+7 , center_y) ;
-        allSnakes[i].draw_snake() ;
-    }
+    
     
     // draw_border_window( max_x , max_y); 
 
+    char ch ; 
     for(;;)
     {
 

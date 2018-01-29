@@ -134,6 +134,8 @@ class socketHandler{
     {
         //wait for an activity on one of the sockets , timeout is NULL , 
         //so wait indefinitely 
+        setupClientDescriptors() ; 
+
         puts("\nBefore select : \n") ; 
         activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);  
         printf("\nSelect returned : %d \n" , activity) ; 
@@ -262,7 +264,6 @@ int main(int argc , char *argv[])
     while(TRUE)  
     {  
    
-        server.setupClientDescriptors() ; 
         activity = server.checkClientActiviy() ;
 
         if(activity==1)
