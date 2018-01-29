@@ -73,6 +73,7 @@ class socketHandler{
         }
     }
 
+
     int connectToServer(string address , int port)
     {
         createClientSocket() ; 
@@ -81,8 +82,10 @@ class socketHandler{
         if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
             printf("\nConnection Failed \n");
+            exit(1) ;
         }
     }
+
 
     void readData()
     {
@@ -428,16 +431,22 @@ int main(int argc , char * argv[])
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
 
-    GameObj.initConsoleScreen("on") ; 
     
     //Set some socket options
     sock_obj.connectToServer( serverAddress , 8888) ; 
-    // sock_obj.sendData("Hello its me ! ") ; 
+
+    string player_name ; 
+    cout<<"Enter your name : " ; 
+
+    cin.ignore() ; 
+    getline(cin , player_name) ; 
+    
+    sock_obj.sendData("init " + player_name) ; 
     // sock_obj.readData() ; 
 
    
+    GameObj.initConsoleScreen("on") ; 
     //Initialize the snake object
-    int number_of_players = 1 ;
     snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
     first_snake.init_snake_on_screen() ; 
 
@@ -452,6 +461,8 @@ int main(int argc , char * argv[])
             {
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
+                string ch_string(1,ch) ; 
+                sock_obj.sendData("key " + ch_string + " " ) ; 
                 first_snake.handleMovementKeyPress(ch) ; 
             }
 
@@ -466,7 +477,8 @@ int main(int argc , char * argv[])
         printSpeed(first_snake) ; 
         GameObj.printFood() ;
         refresh() ;
-        usleep(first_snake.getSpeed()) ;
+        // usleep(first_snake.getSpeed()) ;
+        usleep(90000) ;
     }
 
     refresh() ;
