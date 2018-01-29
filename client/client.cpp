@@ -266,7 +266,11 @@ class snake
     //called to make the snake appear on the screen for the first time 
     void init_snake_on_screen()
     {
-
+        add_part(GameObj.getCenterX() , GameObj.getCenterY()) ; 
+        add_part(GameObj.getCenterX()+1 , GameObj.getCenterY()) ; 
+        add_part(GameObj.getCenterX()+2 , GameObj.getCenterY()) ; 
+        
+        draw_snake() ;
     }
 
     //Used to move the snake in the given direction 
@@ -280,7 +284,6 @@ class snake
         {
             add_part((last_part.x+1)%max_x  , last_part.y) ;
             snakeDirection  = "right" ; 
-            
         }
 
         else if(direction =="left") 
@@ -426,30 +429,19 @@ int main(int argc , char * argv[])
     cin>>serverAddress ; 
 
     GameObj.initConsoleScreen("on") ; 
-
     
     //Set some socket options
     sock_obj.connectToServer( serverAddress , 8888) ; 
     // sock_obj.sendData("Hello its me ! ") ; 
     // sock_obj.readData() ; 
 
-    
-    //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
-    string no_players = "single" ; 
-    
    
     //Initialize the snake object
     int number_of_players = 1 ;
-    vector <snake> allSnakes ;
     snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
-    allSnakes.push_back(first_snake) ;
+    first_snake.init_snake_on_screen() ; 
 
     
-
-    
-    
-    // draw_border_window( max_x , max_y); 
-
     char ch ; 
     for(;;)
     {
@@ -463,15 +455,6 @@ int main(int argc , char * argv[])
                 first_snake.handleMovementKeyPress(ch) ; 
             }
 
-            //INcrease the snake speed
-            // if(ch==45)
-            // {
-            //     allSnakes[0].setSpeed(allSnakes[0].getSpeed()+3000) ;
-            // }
-            // //Decrease the snake speed
-            // if(ch==43)
-            //     allSnakes[0].setSpeed(allSnakes[0].getSpeed()-3000); 
-            
         }
 
         flushinp();
@@ -483,7 +466,7 @@ int main(int argc , char * argv[])
         printSpeed(first_snake) ; 
         GameObj.printFood() ;
         refresh() ;
-        usleep(allSnakes[0].getSpeed()) ;
+        usleep(first_snake.getSpeed()) ;
     }
 
     refresh() ;
