@@ -126,12 +126,14 @@ class Game
     int noOfPlayers ;
     food foodObj ;
     int center_x , center_y; 
+    unsigned long int speed ; 
 
     public:
 
     Game(int players = 1 )
     {
         noOfPlayers= players ; 
+        speed = 70000; 
         foodObj.x  = foodObj.y = 0 ;
     }
     
@@ -148,6 +150,8 @@ class Game
     int getNoOfPlayers(){return noOfPlayers ; }
     void setNoOfPlayers(int n){noOfPlayers  = n ; }
     void initConsoleScreen(string ) ; 
+    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; }
+    long int getSpeed(void){return speed; }
 };
 Game GameObj(1) ;
 
@@ -228,7 +232,6 @@ class snake
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
-    unsigned long int speed ; 
     int score ;
     char keyUp , keyDown , keyRight , keyLeft ; 
     int id ; 
@@ -237,7 +240,6 @@ class snake
     snake(char up , char down , char right , char left , int id )
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
-        speed = 70000 ;
         score = 0 ; 
         snakeDirection = "right" ; 
         id = id ; 
@@ -353,12 +355,10 @@ class snake
     }
 
     
-    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; }
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
     int getHeadY(void){return parts.at(parts.size()-1).y;}
     string getDirection(void){return snakeDirection; }
-    long int getSpeed(void){return speed; }
 
 }; 
 
@@ -413,11 +413,9 @@ void charecter_code_testing_fun(void)
 
 void printSpeed(snake snk)
 {
-    mvprintw(0 , max_x-20 , "Speed= %lu" ,snk.getSpeed()) ; 
+    mvprintw(0 , max_x-20 , "Speed= %lu" ,GameObj.getSpeed()) ; 
     refresh() ;
 }
-
-
 
 
 
@@ -431,7 +429,6 @@ int main(int argc , char * argv[])
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
 
-    
     //Set some socket options
     sock_obj.connectToServer( serverAddress , 8888) ; 
 
@@ -450,7 +447,7 @@ int main(int argc , char * argv[])
     snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
     first_snake.init_snake_on_screen() ; 
 
-    
+
     char ch ; 
     for(;;)
     {
@@ -462,7 +459,7 @@ int main(int argc , char * argv[])
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
                 string ch_string(1,ch) ; 
-                sock_obj.sendData("key " + ch_string + " " ) ; 
+                sock_obj.sendData(ch_string) ; 
                 first_snake.handleMovementKeyPress(ch) ; 
             }
 
@@ -478,7 +475,7 @@ int main(int argc , char * argv[])
         GameObj.printFood() ;
         refresh() ;
         // usleep(first_snake.getSpeed()) ;
-        usleep(90000) ;
+        usleep(GameObj.getSpeed()) ;
     }
 
     refresh() ;
