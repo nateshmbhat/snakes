@@ -21,10 +21,132 @@ using namespace std ;
 
 
 //Used classes 
-class Game ; 
 class SocketHandler ; 
+class Game ; 
 class snake ; 
 class snake_part ; 
+
+
+
+//global variables for the program 
+int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
+
+
+typedef struct food
+{
+    int x,y ;
+    char foodChar ;
+}food ; 
+
+
+
+
+
+class Game 
+{
+    private:
+    int noOfPlayers ;
+    food foodObj ;
+    int center_x , center_y; 
+    unsigned long int speed ; 
+
+    public:
+
+    Game(int players = 1 )
+    {
+        noOfPlayers= players ; 
+        speed = 70000; 
+        foodObj.x  = foodObj.y = 0 ;
+    }
+    
+    void generateFood() ; 
+    void printFood(string ) ;
+    void setFoodPos(int , int) ;
+    void handleMessageFromServer(string ) ; 
+    int getFoodX()
+    {return foodObj.x ; }
+    int getFoodY()
+    {return foodObj.y; }
+    int getCenterX(){return center_x ; }
+    int getCenterY(){return center_y ; }
+    food getFoodPos() ;
+    int getNoOfPlayers(){return noOfPlayers ; }
+    void setNoOfPlayers(int n){noOfPlayers  = n ; }
+    void initConsoleScreen(string ) ; 
+    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; } //Speed Increments by 3000
+    long int getSpeed(void){return speed; }
+};
+Game GameObj(1) ;
+
+//Setter method to set the position of food 
+void Game::setFoodPos(int x , int y)
+{
+   foodObj.x = x ; 
+   foodObj.y = y ;  
+}
+
+void Game::handleMessageFromServer(string msg)
+{
+    for(int i =0 ; i<msg.length()  ; i++)
+    {
+        if(msg[i]=='-')
+            GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
+        else if(msg[i]=='+')
+            GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
+    }
+}
+
+//Initialise the console with the decision to turn off or on the enter key and cursor
+void Game::initConsoleScreen(string state)
+{
+    if(state=="on")
+    {
+        initscr() ; //Init screen 
+        noecho() ; // Dont show any pressed char  
+        curs_set(false) ; // Don't show the cursor 
+            
+
+        getmaxyx(stdscr , max_y , max_x) ; 
+        center_x = max_x/2  , center_y = max_y/2 ; 
+        
+        cbreak() ; //Dont wait for enter to be pressed when using getch 
+        nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
+
+    }
+
+    else if(state=="off"){
+        endwin() ; 
+    }
+}
+
+//Returns food obj with a copy of data of foodObj member of game class
+food Game::getFoodPos()
+{
+    food obj = foodObj ;
+    return obj ;
+}
+
+
+void Game::generateFood()
+{
+    int x = random()%max_x , y = random()%max_y  ; 
+    if(!x)x = 2 ; 
+    if(!y) y = 2 ; 
+    mvprintw(y, x ,"#") ;   
+    GameObj.setFoodPos(x , y) ;
+}
+
+void Game::printFood(string status="old")
+{
+    if(status=="new")
+        GameObj.generateFood() ; 
+    
+    if(!GameObj.getFoodX() && !GameObj.getFoodY())
+        generateFood() ; 
+    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
+}
+
+
 
 
 class SocketHandler{
@@ -102,7 +224,7 @@ class SocketHandler{
 
 
 
-    void readData(Game & GameObj)
+    void readData()
     {
         // valread = read( sock , buffer, 1024);
         int val ; 
@@ -117,9 +239,9 @@ class SocketHandler{
             recv(sock , buffer, 1024, 0);
             cout<<"got message : " <<buffer ; 
             
+            GameObj.handleMessageFromServer(string(buffer)) ;
 
             //Handle the message from server and interpret the results . Call the message handler method 
-            GameObj.handleMessageFromServer(string(buffer)) ;
             sleep(1) ; 
         }
 
@@ -127,8 +249,8 @@ class SocketHandler{
         {
             perror("select") ; 
         }
-        
     }
+
 
     void closeSocket()
     {
@@ -136,113 +258,6 @@ class SocketHandler{
     }
 };
 
-
-
-//global variables for the program 
-int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
-
-
-typedef struct food
-{
-    int x,y ;
-    char foodChar ;
-}food ; 
-
-
-
-
-class Game 
-{
-    private:
-    int noOfPlayers ;
-    food foodObj ;
-    int center_x , center_y; 
-    unsigned long int speed ; 
-
-    public:
-
-    Game(int players = 1 )
-    {
-        noOfPlayers= players ; 
-        speed = 70000; 
-        foodObj.x  = foodObj.y = 0 ;
-    }
-    
-    void generateFood() ; 
-    void printFood(string ) ;
-    void setFoodPos(int , int) ;
-    void handleMessageFromServer(string ) ; 
-    int getFoodX()
-    {return foodObj.x ; }
-    int getFoodY()
-    {return foodObj.y; }
-    int getCenterX(){return center_x ; }
-    int getCenterY(){return center_y ; }
-    food getFoodPos() ;
-    int getNoOfPlayers(){return noOfPlayers ; }
-    void setNoOfPlayers(int n){noOfPlayers  = n ; }
-    void initConsoleScreen(string ) ; 
-    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; }
-    long int getSpeed(void){return speed; }
-};
-Game GameObj(1) ;
-
-//Setter method to set the position of food 
-void Game::setFoodPos(int x , int y)
-{
-   foodObj.x = x ; 
-   foodObj.y = y ;  
-}
-
-//Initialise the console with the decision to turn off or on the enter key and cursor
-void Game::initConsoleScreen(string state)
-{
-    if(state=="on")
-    {
-        initscr() ; //Init screen 
-        noecho() ; // Dont show any pressed char  
-        curs_set(false) ; // Don't show the cursor 
-            
-
-        getmaxyx(stdscr , max_y , max_x) ; 
-        center_x = max_x/2  , center_y = max_y/2 ; 
-        
-        cbreak() ; //Dont wait for enter to be pressed when using getch 
-        nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
-
-    }
-
-    else if(state=="off"){
-        endwin() ; 
-    }
-}
-
-//Returns food obj with a copy of data of foodObj member of game class
-food Game::getFoodPos()
-{
-    food obj = foodObj ;
-    return obj ;
-}
-
-
-void Game::generateFood()
-{
-    int x = random()%max_x , y = random()%max_y  ; 
-    if(!x)x = 2 ; 
-    if(!y) y = 2 ; 
-    mvprintw(y, x ,"#") ;   
-    GameObj.setFoodPos(x , y) ;
-}
-
-void Game::printFood(string status="old")
-{
-    if(status=="new")
-        GameObj.generateFood() ; 
-    
-    if(!GameObj.getFoodX() && !GameObj.getFoodY())
-        generateFood() ; 
-    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
-}
 
 
 
@@ -494,7 +509,6 @@ int main(int argc , char * argv[])
                 sock_obj.sendData(ch_string) ; 
                 first_snake.handleMovementKeyPress(ch) ; 
             }
-
         }
 
         flushinp();
@@ -507,7 +521,9 @@ int main(int argc , char * argv[])
         refresh() ;
 
 
-        sock_obj.readData(GameObj) ; 
+        //Read for any incoming data from server ,,,
+        sock_obj.readData() ; 
+
         usleep(GameObj.getSpeed()) ;
     }
 
