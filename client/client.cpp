@@ -20,21 +20,31 @@ using namespace std ;
 #define FALSE  0 
 
 
-class socketHandler{
+//Used classes 
+class Game ; 
+class SocketHandler ; 
+class snake ; 
+class snake_part ; 
+
+
+class SocketHandler{
 
     struct sockaddr_in address;
     struct sockaddr_in serv_addr;
-    int sock , valread;
+    int sock ;  
     char buffer[1024]  ; 
+    fd_set set;
+    struct timeval timeout;
 
     public : 
 
     //initialise all client_socket[] to 0 so not checked 
-    socketHandler(void)
+    SocketHandler(void)
     {
-        sock = 0  , valread = 0 ; 
+        sock = 0  ;  
         memset(&serv_addr, '0', sizeof(serv_addr));
         memset(buffer , 0 ,sizeof(buffer)) ; 
+        timeout.tv_sec = timeout.tv_usec = 0 ; 
     }
 
     void sendData(string message)
@@ -48,6 +58,10 @@ class socketHandler{
     {
         int opt= 1 ;
         sock = socket(AF_INET , SOCK_STREAM , 0) ;
+        FD_ZERO(&set); /* clear the set */
+        FD_SET(sock, &set); /* add our file descriptor to the set */
+
+
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         {
             printf("\n Socket creation error \n");
@@ -87,18 +101,33 @@ class socketHandler{
     }
 
 
-    void readData()
-    {
 
-        valread = read( sock , buffer, 1024);
-        if(valread>0)
+    void readData(Game & GameObj)
+    {
+        // valread = read( sock , buffer, 1024);
+        int val ; 
+
+        FD_ZERO(&set); /* clear the set */
+        FD_SET(sock, &set); /* add our file descriptor to the set */
+
+        val = select(sock+1 , &set , NULL , NULL , &timeout) ; 
+
+        if(val>0)
         {
-            cout<<"\nMessage received : " << buffer ;     
+            recv(sock , buffer, 1024, 0);
+            cout<<"got message : " <<buffer ; 
+            
+
+            //Handle the message from server and interpret the results . Call the message handler method 
+            GameObj.handleMessageFromServer(string(buffer)) ;
+            sleep(1) ; 
         }
-        else
+
+        else if(val==-1)
         {
-            cout<<"\nNo message from server yet :( " ; 
+            perror("select") ; 
         }
+        
     }
 
     void closeSocket()
@@ -118,6 +147,8 @@ typedef struct food
     int x,y ;
     char foodChar ;
 }food ; 
+
+
 
 
 class Game 
@@ -140,6 +171,7 @@ class Game
     void generateFood() ; 
     void printFood(string ) ;
     void setFoodPos(int , int) ;
+    void handleMessageFromServer(string ) ; 
     int getFoodX()
     {return foodObj.x ; }
     int getFoodY()
@@ -424,7 +456,7 @@ int main(int argc , char * argv[])
 
     srand(time(NULL)) ;
     system("clear") ;     
-    socketHandler sock_obj ; 
+    SocketHandler sock_obj ; 
     string serverAddress ; 
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
@@ -470,11 +502,12 @@ int main(int argc , char * argv[])
 
         first_snake.move_snake(first_snake.getDirection()) ;
 
-
         printSpeed(first_snake) ; 
         GameObj.printFood() ;
         refresh() ;
-        // usleep(first_snake.getSpeed()) ;
+
+
+        sock_obj.readData(GameObj) ; 
         usleep(GameObj.getSpeed()) ;
     }
 
@@ -483,6 +516,3 @@ int main(int argc , char * argv[])
     sleep(10) ; 
     endwin() ; 
 }
-
-
-    // sock_obj.closeSocket() ;
