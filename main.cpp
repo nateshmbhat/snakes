@@ -5,6 +5,8 @@
 
 using namespace std ; 
 
+class snake ; 
+
 
 //global variables for the program 
 int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
@@ -21,26 +23,46 @@ class Game
 {
     private:
     int noOfPlayers ;
+    string gamemode ; 
     food foodObj ;
+    int center_x , center_y; 
+    unsigned long int speed ; 
 
     public:
 
+    vector <snake> allSnakes ;
     Game(int players = 1 )
     {
         noOfPlayers= players ; 
+        speed = 70000; 
         foodObj.x  = foodObj.y = 0 ;
     }
     
     void generateFood() ; 
+    void draw_all_snakes() ; 
     void printFood(string ) ;
+    void MainEventLoop() ; 
+    void ask_no_players(string) ; 
+    void moveAllSnakes() ; 
     void setFoodPos(int , int) ;
+    void handleMessageFromServer(string ) ;
     int getFoodX()
     {return foodObj.x ; }
     int getFoodY()
     {return foodObj.y; }
+    int getCenterX(){return center_x ; }
+    int getCenterY(){return center_y ; }
+
+
+    void setGameMode(string mode){gamemode = mode ; }
+    string  getGameMode(){return gamemode ; }
+
     food getFoodPos() ;
     int getNoOfPlayers(){return noOfPlayers ; }
     void setNoOfPlayers(int n){noOfPlayers  = n ; }
+    void initConsoleScreen(string ) ; 
+    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; } //Speed Increments by 3000
+    long int getSpeed(void){return speed; }
 };
 Game GameObj(1) ;
 
@@ -51,11 +73,66 @@ void Game::setFoodPos(int x , int y)
    foodObj.y = y ;  
 }
 
+void Game::handleMessageFromServer(string msg)
+{
+    for(int i =0 ; i<msg.length()  ; i++)
+    {
+        if(msg[i]=='-')
+            GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
+        else if(msg[i]=='+')
+            GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
+    }
+}
+
+void Game::moveAllSnakes()
+{
+    for(int i =0 ; i<allSnakes.size() ; i++)
+        {
+            allSnakes[i].move_snake(allSnakes[i].getDirection()) ;
+        }
+
+}
+
+//Initialise the console with the decision to turn off or on the enter key and cursor
+void Game::initConsoleScreen(string state)
+{
+    if(state=="on")
+    {
+        initscr() ; //Init screen 
+        noecho() ; // Dont show any pressed char  
+        curs_set(false) ; // Don't show the cursor 
+            
+
+        getmaxyx(stdscr , max_y , max_x) ; 
+        center_x = max_x/2  , center_y = max_y/2 ; 
+        
+        cbreak() ; //Dont wait for enter to be pressed when using getch 
+        nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
+
+    }
+
+    else if(state=="off"){
+        endwin() ; 
+    }
+}
+
 //Returns food obj with a copy of data of foodObj member of game class
 food Game::getFoodPos()
 {
     food obj = foodObj ;
     return obj ;
+}
+
+void Game::draw_all_snakes()
+{
+    //add the first 3 dots to the snake 
+    for(int i =0; i<allSnakes.size(); i++)
+    {
+        allSnakes[i].add_part(center_x+5 , center_y) ; 
+        allSnakes[i].add_part(center_x+6 , center_y) ; 
+        allSnakes[i].add_part(center_x+7 , center_y) ;
+        allSnakes[i].draw_snake() ;
+    }
 }
 
 
@@ -79,7 +156,6 @@ void Game::printFood(string status="old")
 }
 
 
-
 class snake_part
 {
     public :
@@ -93,12 +169,12 @@ class snake_part
 
 
 
-class snake
+class snake 
 {
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
-    unsigned long int speed ; 
+    snake * first_snake ; 
     int score ;
     char keyUp , keyDown , keyRight , keyLeft ; 
     int id ; 
@@ -107,7 +183,6 @@ class snake
     snake(char up , char down , char right , char left , int id )
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
-        speed = 70000 ;
         score = 0 ; 
         snakeDirection = "right" ; 
         id = id ; 
@@ -115,6 +190,7 @@ class snake
 
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
+
 
     void draw_snake(void)
     {
@@ -136,7 +212,17 @@ class snake
             parts.insert(parts.begin() ,obj) ; 
     }
 
+    //called to make the snake appear on the screen for the first time 
+    void init_snake_on_screen()
+    {
+        add_part(GameObj.getCenterX() , GameObj.getCenterY()) ; 
+        add_part(GameObj.getCenterX()+1 , GameObj.getCenterY()) ; 
+        add_part(GameObj.getCenterX()+2 , GameObj.getCenterY()) ; 
+        
+        draw_snake() ;
+    }
 
+    //Used to move the snake in the given direction 
     void move_snake(string direction)
     {
         
@@ -147,7 +233,6 @@ class snake
         {
             add_part((last_part.x+1)%max_x  , last_part.y) ;
             snakeDirection  = "right" ; 
-            
         }
 
         else if(direction =="left") 
@@ -214,16 +299,12 @@ class snake
     }
 
     
-    unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; }
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
     int getHeadY(void){return parts.at(parts.size()-1).y;}
     string getDirection(void){return snakeDirection; }
-    long int getSpeed(void){return speed; }
-
 
 }; 
-
 
 
 
@@ -258,7 +339,6 @@ void draw_border_window( int max_x , int max_y)
 
 
 
-
 void charecter_code_testing_fun(void)
 {
     //CHARACTER CODE TESTING FUNTION
@@ -275,12 +355,12 @@ void charecter_code_testing_fun(void)
 
 void printSpeed(snake snk)
 {
-    mvprintw(0 , max_x-20 , "Speed= %lu" ,snk.getSpeed()) ; 
+    mvprintw(0 , max_x-20 , "Speed= %lu" ,GameObj.getSpeed()) ; 
     refresh() ;
 }
 
 
-string ask_no_players(string player="single")
+void Game::ask_no_players(string player="single")
 {
     char ch ; 
 
@@ -294,18 +374,20 @@ string ask_no_players(string player="single")
             ch = getch() ; 
             if(ch=='A')
             {
-                player="single" ; 
+                player = "single" ; 
             }
 
             else if(ch=='B')
             {
-                player="multi" ; 
+                player = "multi" ; 
             }
         }
 
         else if(ch==10)
         {
-            return player ; 
+            //If enter key pressed break from the loop 
+            GameObj.setGameMode(player) ; 
+            break ; 
         }
 
     mvprintw(1 , 5 , " SINGLE PLAYER or") ;
@@ -321,93 +403,40 @@ string ask_no_players(string player="single")
     clear() ;
 
     }
-}
 
 
 
-int main(int argc , char * argv[]) 
-{
-    
-    initscr() ; //Init screen 
-    noecho() ; // Dont show any pressed char  
-    curs_set(false) ; // Don't show the cursor 
-    srand(time(NULL)) ;
-        
-
-    float x= 0 , y =0 ; 
-    getmaxyx(stdscr , max_y , max_x) ; 
-    int center_x = max_x/2  , center_y = max_y/2 ; 
-    char ch ; 
-
-    
-    cbreak() ; //Dont wait for enter to be pressed when using getch 
-    nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
-
-    
-    //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
-    string no_players = ask_no_players() ;
-    
-   
-    //Initialize the snake object
-    int number_of_players = 1 ;
-    vector <snake> allSnakes ;
-    snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
-    allSnakes.push_back(first_snake) ;
-
-
-//NORMAL BEHAVIOUR FOR INPUT
-    // echo() ; 
-    // nodelay(stdscr , 0);
-    // nocbreak() ;
-    endwin() ;
-
-    if(no_players=="multi")
+    if(GameObj.getGameMode()=="multi")
         {
+            GameObj.initConsoleScreen("off") ; 
             system("clear")  ;
+            int no_of_players ; 
             cout<<"Enter the number of players : "  ; 
-            cin>> number_of_players ;
+            cin>> no_of_players;
+            GameObj.setNoOfPlayers(no_of_players) ; 
         }
 
 
-    for(int i =1 ; i<number_of_players ; i++)
+     for(int i =1 ; i<GameObj.getNoOfPlayers() ; i++)
     {
 
         char left , right , up , down ; 
         cout<<"Player "<<i<<" = Enter the key for Left Right Up Down  : " ;
         cin>>left >>right >>up >>down ; 
 
-        snake snk(up , down , right , left , i) ;
-        allSnakes.push_back(snk) ;
-
+        snake * snk = new snake(up , down , right , left , i) ; 
+        GameObj.allSnakes.push_back(*snk) ; 
     }
 
-    initscr() ;
-    noecho() ; 
-    nodelay(stdscr , 1) ; 
-    cbreak() ;
+    //Turn on the coordinate kind of behaviour for the terminal
+    GameObj.initConsoleScreen("on") ; 
+
+}
 
 
-
-//END OF NORMAL BEHAVIOUR
-
-
-   //add the first 3 dots to the snake 
-    for(int i =0; i<allSnakes.size(); i++)
-    {
-        allSnakes[i].add_part(center_x+5 , center_y) ; 
-        allSnakes[i].add_part(center_x+6 , center_y) ; 
-        allSnakes[i].add_part(center_x+7 , center_y) ;
-        allSnakes[i].draw_snake() ;
-    }
-    
-    // draw_border_window( max_x , max_y); 
-
-    for(;;)
-    {
-
-        if((ch = getch())!=ERR)
-        {
-            if(ch==27)
+void Game::MainEventLoop()
+{
+    if(ch==27)
             {
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
@@ -425,11 +454,42 @@ int main(int argc , char * argv[])
             //INcrease the snake speed
             if(ch==45)
             {
-                allSnakes[0].setSpeed(allSnakes[0].getSpeed()+3000) ;
+                GameObj.setSpeed(GameObj.getSpeed()+3000) ;
             }
             //Decrease the snake speed
             if(ch==43)
-                allSnakes[0].setSpeed(allSnakes[0].getSpeed()-3000); 
+                GameObj.setSpeed(GameObj.getSpeed()-3000); 
+}
+
+
+
+
+int main(int argc , char * argv[]) 
+{
+
+    srand(time(NULL)) ;
+    GameObj.initConsoleScreen("on") ; 
+
+    //Add the first snake object
+    snake first_snake  = snake('A' , 'B' , 'C' , 'D' , 0) ; 
+    GameObj.allSnakes.push_back(first_snake) ;
+
+    //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
+    GameObj.ask_no_players() ; 
+    GameObj.draw_all_snakes() ; 
+        
+   
+    char ch ; 
+    
+    // draw_border_window( max_x , max_y); 
+
+    for(;;)
+    {
+
+        if((ch = getch())!=ERR)
+        {
+            GameObj.MainEventLoop() ; 
+            
             
         }
 
@@ -437,23 +497,13 @@ int main(int argc , char * argv[])
 
         flushinp();
         clear() ;
-
-        for(int i =0 ; i<allSnakes.size() ; i++)
-        {
-            allSnakes[i].move_snake(allSnakes[i].getDirection()) ;
-        }
-
+        GameObj.moveAllSnakes() ; 
 
         // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
-        // // draw_border_window(max_x , max_y) ; 
-        printSpeed(allSnakes[0]) ; 
+        printSpeed(GameObj.allSnakes[0]) ; 
         GameObj.printFood() ;
         refresh() ;
-        usleep(allSnakes[0].getSpeed()) ;
+        usleep(GameObj.getSpeed()) ;
     }
-
-    refresh() ;
-
-    sleep(10) ; 
-    endwin() ; 
+ 
 }
