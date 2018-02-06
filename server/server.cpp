@@ -12,13 +12,11 @@
 #include <netinet/in.h> 
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
 using namespace std ; 
-#define TRUE   1 
-#define FALSE  0 
 
 
 class socketHandler{
 
-    int opt = TRUE;  
+    int opt ;  
     int master_socket , PORT , addrlen , new_socket , client_socket[30] , 
           max_clients , activity, i , valread , sd;  
     int max_sd;  
@@ -30,7 +28,59 @@ class socketHandler{
     //set of socket descriptors 
     fd_set readfds; 
 
-    void initServerSocket()
+    void initServerSocket() ; 
+       
+
+    public : 
+
+    socketHandler(void) ; 
+    void bindServer() ; 
+    void handleActivity() ; 
+    void setupClientDescriptors() ; 
+    void startServer() ; 
+
+    int checkClientActiviy() ; 
+    void closeSocket() ; 
+    void handleNewConnection() ; 
+    void handleIOActivity(int) ; 
+
+    
+};
+
+
+
+
+int main(int argc , char *argv[])  
+{  
+    socketHandler server ; 
+    server.bindServer() ; 
+    server.setupClientDescriptors() ; 
+    server.startServer() ; 
+
+    int activity ;
+
+    while(true)  
+    {  
+   
+        activity = server.checkClientActiviy() ;
+
+        if(activity==1)
+        {
+            server.handleActivity() ;             
+        }
+        
+        cout<<"\nSleeping for 2 seconds : \n" ; 
+        sleep(2) ; 
+
+    }  
+        
+    return 0;  
+}  
+
+
+
+
+    void socketHandler:: initServerSocket()
     {
         //create a master socket 
         if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)  
@@ -48,26 +98,8 @@ class socketHandler{
         }  
 
     }
-        
 
-    public : 
-
-    //initialise all client_socket[] to 0 so not checked 
-    socketHandler(void)
-    {
-        max_clients = 30 ; 
-        valread = 0 ; 
-        PORT = 8888 ; 
-
-        //initialise all client_socket[] to 0 so not checked 
-        memset(client_socket , 0 , sizeof(client_socket)) ; 
-        memset(&address, '0', sizeof(address));
-        memset(buffer , 0 ,sizeof(buffer)) ; 
-        strcpy(message , "Successfully Connected  \r\n") ; 
-    }
-
-
-    void bindServer()
+    void  socketHandler::bindServer()
     {
         initServerSocket() ; 
 
@@ -85,7 +117,7 @@ class socketHandler{
     }
 
 
-    void setupClientDescriptors()
+    void socketHandler:: setupClientDescriptors()
     {
         //clear the socket set 
         FD_ZERO(&readfds);  
@@ -112,7 +144,7 @@ class socketHandler{
     }
 
 
-    void startServer()
+    void socketHandler:: startServer()
     {
         printf("Listener on port %d \n",PORT );  
             
@@ -127,10 +159,28 @@ class socketHandler{
         addrlen = sizeof(address);  
         puts("Waiting for connections ...");  
 
+    } 
+
+
+//initialise all client_socket[] to 0 so not checked 
+    socketHandler:: socketHandler(void)
+    {
+        max_clients = 30 ; 
+        valread = 0 ; 
+        PORT = 8888 ; 
+        opt = true ; 
+
+        //initialise all client_socket[] to 0 so not checked 
+        memset(client_socket , 0 , sizeof(client_socket)) ; 
+        memset(&address, '0', sizeof(address));
+        memset(buffer , 0 ,sizeof(buffer)) ; 
+        strcpy(message , "Successfully Connected  \r\n") ; 
     }
 
 
-    int checkClientActiviy()
+
+
+    int socketHandler:: checkClientActiviy()
     {
         //wait for an activity on one of the sockets , timeout is NULL , 
         //so wait indefinitely 
@@ -150,12 +200,12 @@ class socketHandler{
 
 
 
-    void closeSocket()
+    void socketHandler:: closeSocket()
     {
         close(master_socket) ; 
     }
 
-    void handleNewConnection()
+    void socketHandler:: handleNewConnection()
     {
         puts("\nInside FD_ISSET master_socket") ; 
             if ((new_socket = accept(master_socket, 
@@ -192,7 +242,7 @@ class socketHandler{
     }
 
 
-    void handleIOActivity(int client_sd)
+    void socketHandler:: handleIOActivity(int client_sd)
     {
         //Check if it was for closing , and also read the 
         //incoming message 
@@ -216,14 +266,14 @@ class socketHandler{
             //set the string terminating NULL byte on the end 
             //of the data read 
             buffer[valread] = '\0';  
-            cout<< "\Message from client : " << buffer << " ; Length : " <<valread ;
+            cout<< "\nMessage from client : " << buffer << " ; Length : " <<valread ;
 
             send(client_sd , buffer , strlen(buffer) , 0 );  
         }  
     }
 
 
-    void handleActivity()
+    void socketHandler:: handleActivity()
     {
         //If something happened on the master socket , 
         //then its an incoming connection 
@@ -247,35 +297,3 @@ class socketHandler{
         }
 
     }
-};
-
-
-
-
-int main(int argc , char *argv[])  
-{  
-    socketHandler server ; 
-    server.bindServer() ; 
-    server.setupClientDescriptors() ; 
-    server.startServer() ; 
-
-    int activity ;
-
-    while(TRUE)  
-    {  
-   
-        activity = server.checkClientActiviy() ;
-
-        if(activity==1)
-        {
-            server.handleActivity() ;             
-        }
-        
-        cout<<"\nSleeping for 2 seconds : \n" ; 
-        sleep(2) ; 
-
-    }  
-        
-    return 0;  
-}  
-
