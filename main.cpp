@@ -40,6 +40,7 @@ class Game
     
     void generateFood() ; 
     void draw_all_snakes() ; 
+    void KeyPressHandler() ; 
     void printFood(string ) ;
     void MainEventLoop() ; 
     void ask_no_players(string) ; 
@@ -66,95 +67,6 @@ class Game
 };
 Game GameObj(1) ;
 
-//Setter method to set the position of food 
-void Game::setFoodPos(int x , int y)
-{
-   foodObj.x = x ; 
-   foodObj.y = y ;  
-}
-
-void Game::handleMessageFromServer(string msg)
-{
-    for(int i =0 ; i<msg.length()  ; i++)
-    {
-        if(msg[i]=='-')
-            GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
-        else if(msg[i]=='+')
-            GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
-    }
-}
-
-void Game::moveAllSnakes()
-{
-    for(int i =0 ; i<allSnakes.size() ; i++)
-        {
-            allSnakes[i].move_snake(allSnakes[i].getDirection()) ;
-        }
-
-}
-
-//Initialise the console with the decision to turn off or on the enter key and cursor
-void Game::initConsoleScreen(string state)
-{
-    if(state=="on")
-    {
-        initscr() ; //Init screen 
-        noecho() ; // Dont show any pressed char  
-        curs_set(false) ; // Don't show the cursor 
-            
-
-        getmaxyx(stdscr , max_y , max_x) ; 
-        center_x = max_x/2  , center_y = max_y/2 ; 
-        
-        cbreak() ; //Dont wait for enter to be pressed when using getch 
-        nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
-
-    }
-
-    else if(state=="off"){
-        endwin() ; 
-    }
-}
-
-//Returns food obj with a copy of data of foodObj member of game class
-food Game::getFoodPos()
-{
-    food obj = foodObj ;
-    return obj ;
-}
-
-void Game::draw_all_snakes()
-{
-    //add the first 3 dots to the snake 
-    for(int i =0; i<allSnakes.size(); i++)
-    {
-        allSnakes[i].add_part(center_x+5 , center_y) ; 
-        allSnakes[i].add_part(center_x+6 , center_y) ; 
-        allSnakes[i].add_part(center_x+7 , center_y) ;
-        allSnakes[i].draw_snake() ;
-    }
-}
-
-
-void Game::generateFood()
-{
-    int x = random()%max_x , y = random()%max_y  ; 
-    if(!x)x = 2 ; 
-    if(!y) y = 2 ; 
-    mvprintw(y, x ,"#") ;   
-    GameObj.setFoodPos(x , y) ;
-}
-
-void Game::printFood(string status="old")
-{
-    if(status=="new")
-        GameObj.generateFood() ; 
-    
-    if(!GameObj.getFoodX() && !GameObj.getFoodY())
-        generateFood() ; 
-    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
-}
-
 
 class snake_part
 {
@@ -174,7 +86,6 @@ class snake
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
-    snake * first_snake ; 
     int score ;
     char keyUp , keyDown , keyRight , keyLeft ; 
     int id ; 
@@ -408,6 +319,7 @@ void Game::ask_no_players(string player="single")
 
     if(GameObj.getGameMode()=="multi")
         {
+            flushinp() ; 
             GameObj.initConsoleScreen("off") ; 
             system("clear")  ;
             int no_of_players ; 
@@ -430,35 +342,135 @@ void Game::ask_no_players(string player="single")
 
     //Turn on the coordinate kind of behaviour for the terminal
     GameObj.initConsoleScreen("on") ; 
-
 }
 
 
-void Game::MainEventLoop()
+//Right now this is the MAIN KEYS HANDLING FUNCTION Which will handle all the keystrokes entered 
+void Game::KeyPressHandler()
 {
-    if(ch==27)
+    char ch ; 
+    if((ch = getch())!=ERR)
+    {
+        if(ch==27)
+        {
+            getch() ; // clear and reject 91 from buffer
+            ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
+            allSnakes[0].handleMovementKeyPress(ch) ;
+        }
+
+        else if (GameObj.getGameMode()=="multi"){
+            for(int i =1 ; i<allSnakes.size() ; i++)
             {
-                getch() ; // clear and reject 91 from buffer
-                ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
-                allSnakes[0].handleMovementKeyPress(ch) ; 
+                allSnakes[i].handleMovementKeyPress(ch) ; 
             }
-
-            else if (no_players=="multi"){
-                for(int i =1 ; i<allSnakes.size() ; i++)
-                {
-                    allSnakes[i].handleMovementKeyPress(ch) ; 
-                }
-            }
+        }
 
 
-            //INcrease the snake speed
-            if(ch==45)
-            {
-                GameObj.setSpeed(GameObj.getSpeed()+3000) ;
-            }
-            //Decrease the snake speed
-            if(ch==43)
-                GameObj.setSpeed(GameObj.getSpeed()-3000); 
+        //INcrease the snake speed
+        if(ch==45)
+        {
+            GameObj.setSpeed(GameObj.getSpeed()+3000) ;
+        }
+        //Decrease the snake speed
+        if(ch==43)
+            GameObj.setSpeed(GameObj.getSpeed()-3000); 
+
+    }
+    
+}
+
+
+void Game::draw_all_snakes()
+{
+    //add the first 3 dots to the snake 
+    for(int i =0; i<allSnakes.size(); i++)
+    {
+        allSnakes[i].add_part(center_x+5 , center_y) ; 
+        allSnakes[i].add_part(center_x+6 , center_y) ; 
+        allSnakes[i].add_part(center_x+7 , center_y) ;
+        allSnakes[i].draw_snake() ;
+    }
+}
+
+
+void Game::moveAllSnakes()
+{
+    for(int i =0 ; i<allSnakes.size() ; i++)
+        {
+            allSnakes[i].move_snake(allSnakes[i].getDirection()) ;
+        }
+
+}
+
+//Setter method to set the position of food 
+void Game::setFoodPos(int x , int y)
+{
+   foodObj.x = x ; 
+   foodObj.y = y ;  
+}
+
+void Game::handleMessageFromServer(string msg)
+{
+    for(int i =0 ; i<msg.length()  ; i++)
+    {
+        if(msg[i]=='-')
+            GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
+        else if(msg[i]=='+')
+            GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
+    }
+}
+
+
+
+//Initialise the console with the decision to turn off or on the enter key and cursor
+void Game::initConsoleScreen(string state)
+{
+    if(state=="on")
+    {
+        initscr() ; //Init screen 
+        noecho() ; // Dont show any pressed char  
+        curs_set(false) ; // Don't show the cursor 
+            
+
+        getmaxyx(stdscr , max_y , max_x) ; 
+        center_x = max_x/2  , center_y = max_y/2 ; 
+        
+        cbreak() ; //Dont wait for enter to be pressed when using getch 
+        nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
+
+    }
+
+    else if(state=="off"){
+        endwin() ; 
+    }
+}
+
+//Returns food obj with a copy of data of foodObj member of game class
+food Game::getFoodPos()
+{
+    food obj = foodObj ;
+    return obj ;
+}
+
+
+
+void Game::generateFood()
+{
+    int x = random()%max_x , y = random()%max_y  ; 
+    if(!x)x = 2 ; 
+    if(!y) y = 2 ; 
+    mvprintw(y, x ,"#") ;   
+    GameObj.setFoodPos(x , y) ;
+}
+
+void Game::printFood(string status="old")
+{
+    if(status=="new")
+        GameObj.generateFood() ; 
+    
+    if(!GameObj.getFoodX() && !GameObj.getFoodY())
+        generateFood() ; 
+    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
 }
 
 
@@ -485,18 +497,12 @@ int main(int argc , char * argv[])
 
     for(;;)
     {
-
-        if((ch = getch())!=ERR)
-        {
-            GameObj.MainEventLoop() ; 
-            
-            
-        }
-
-
+        
+        GameObj.KeyPressHandler() ; //Handles key presses 
 
         flushinp();
         clear() ;
+
         GameObj.moveAllSnakes() ; 
 
         // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
