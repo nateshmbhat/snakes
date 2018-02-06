@@ -1,81 +1,4 @@
-//Example code: A simple server side code, which echos back the received message.
-//Handle multiple socket connections with select and fd_set on Linux 
-#include <stdio.h> 
-#include <string.h>   //strlen 
-#include <stdlib.h> 
-#include <errno.h> 
-#include<iostream>
-#include <unistd.h>   //close 
-#include <arpa/inet.h>    //close 
-#include <sys/types.h> 
-#include <sys/socket.h> 
-#include <netinet/in.h> 
-#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
-using namespace std ; 
-
-
-class socketHandler{
-
-    int opt ;  
-    int master_socket , PORT , addrlen , new_socket , client_socket[30] , 
-          max_clients , activity, i , valread , sd;  
-    int max_sd;  
-    struct sockaddr_in address;  
-    char message[50] ; 
-        
-    char buffer[1025];  //data buffer of 1K 
-        
-    //set of socket descriptors 
-    fd_set readfds; 
-
-    void initServerSocket() ; 
-       
-
-    public : 
-
-    socketHandler(void) ; 
-    void bindServer() ; 
-    void handleActivity() ; 
-    void setupClientDescriptors() ; 
-    void startServer() ; 
-
-    int checkClientActiviy() ; 
-    void closeSocket() ; 
-    void handleNewConnection() ; 
-    void handleIOActivity(int) ; 
-
-    
-};
-
-
-
-
-int main(int argc , char *argv[])  
-{  
-    socketHandler server ; 
-    server.bindServer() ; 
-    server.setupClientDescriptors() ; 
-    server.startServer() ; 
-
-    int activity ;
-
-    while(true)  
-    {  
-   
-        activity = server.checkClientActiviy() ;
-
-        if(activity==1)
-        {
-            server.handleActivity() ;             
-        }
-        
-        cout<<"\nSleeping for 2 seconds : \n" ; 
-        sleep(2) ; 
-
-    }  
-        
-    return 0;  
-}  
+#include<"server.h">
 
 
 
@@ -296,4 +219,32 @@ int main(int argc , char *argv[])
             } 
         }
 
+    }
+
+
+    //Returns array with -1 if its a new connection else returns a list of client sds 
+    vector<int> socketHandler:: handleActivity(string dummy)
+    {
+        vector <int> descriptors ; 
+        //If something happened on the master socket , 
+        //then its an incoming connection 
+        if (FD_ISSET(master_socket, &readfds))  
+        {  
+           descriptors.push_back(-1);  
+        }  
+
+        else{
+            //else its some IO operation on some other socket
+            for (i = 0; i < max_clients; i++)  
+            {  
+                sd = client_socket[i];  
+                    
+                if (FD_ISSET( sd , &readfds))  
+                {  
+                    descriptors.push_back(sd) ; 
+                }  
+            } 
+        }
+
+        return descriptors ; 
     }

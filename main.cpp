@@ -2,11 +2,12 @@
 #include<iostream>
 #include<unistd.h>
 #include<ncurses.h>
+#include<"./server/server.h">
 
 using namespace std ; 
 
 class snake ; 
-
+class Game ;
 
 //global variables for the program 
 int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
@@ -24,6 +25,8 @@ class Game
     private:
     int noOfPlayers ;
     string gamemode ; 
+    socketHandler server ; 
+    vector<int> clients ; 
     food foodObj ;
     int center_x , center_y; 
     unsigned long int speed ; 
@@ -46,8 +49,11 @@ class Game
     void ask_no_players(string) ; 
     void moveAllSnakes() ; 
     void setFoodPos(int , int) ;
+    void handleNewConnection() ; 
+    void handleIOActivity() ; 
     void handleMessageFromServer(string ) ;
-    int getFoodX()
+    void initServerForMultiplayer(socketHandler & ) ; 
+    int getFoodX() ; 
     {return foodObj.x ; }
     int getFoodY()
     {return foodObj.y; }
@@ -56,6 +62,7 @@ class Game
 
 
     void setGameMode(string mode){gamemode = mode ; }
+    void setClientsList(vector<int> clientslist){clients = clientslist ; }
     string  getGameMode(){return gamemode ; }
 
     food getFoodPos() ;
@@ -476,7 +483,10 @@ void Game::printFood(string status="old")
 
 
 
-int main(int argc , char * argv[]) 
+
+//THIS IS A VERY IMPORTANT FUNCTION WHICH SHOULD HAVE BEEN INCLUDED IN THE MAIN FUNCTION , BUT FOR CONVENIENCE , ITS INCLUDED HERE . 
+//HANDLES EVERYTHING UNTILL THE MAIN EVENT LOOP STARTS IN THE main function . 
+void HANDLE_EVERYTHING_TILL_EVENT_LOOP()
 {
 
     srand(time(NULL)) ;
@@ -489,16 +499,68 @@ int main(int argc , char * argv[])
     //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
     GameObj.ask_no_players() ; 
     GameObj.draw_all_snakes() ; 
-        
-   
-    char ch ; 
+ 
+}
+
+
+void Game::initServerForMultiplayer()
+{
+    server.bindServer() ; 
+    server.setupClientDescriptors() ; 
+    server.startServer() ; 
+}
+
+void Game::handleNewConnection()
+{
+    server.handleNewConnection() ; 
+}
+
+void Game::handleIOActivity()
+{
     
+}
+
+
+void Game::handleActivity()
+{
+    if(clients[0]==-1)
+    {
+        GameObj.handleNewConnection() ; 
+    }
+    else server.handleIOActivity() ; 
+}
+
+
+int main(int argc , char * argv[]) 
+{
+    
+    HANDLE_EVERYTHING_TILL_EVENT_LOOP() ; 
+    
+
+    if(GameObj.getGameMode()=="multi")
+    {
+        GameObj.initServerForMultiplayer() ; 
+    }
+   
     // draw_border_window( max_x , max_y); 
 
     for(;;)
     {
         
         GameObj.KeyPressHandler() ; //Handles key presses 
+
+        if(GameObj.getGameMode()=="multi")
+        {
+            activity = server.checkClientActiviy() ;
+
+            if(activity==1)
+            {
+                GameObj.setClientsList(server.handleActivity("dummy")) ; 
+                GameObj.handleActivity(clients) ; 
+
+           }
+            
+        }
 
         flushinp();
         clear() ;
@@ -513,3 +575,35 @@ int main(int argc , char * argv[])
     }
  
 }
+
+
+
+
+
+
+// int main(int argc , char *argv[])  
+// {  
+//     socketHandler server ; 
+//     server.bindServer() ; 
+//     server.setupClientDescriptors() ; 
+//     server.startServer() ; 
+
+//     int activity ;
+
+//     while(true)  
+//     {  
+   
+//         activity = server.checkClientActiviy() ;
+
+//         if(activity==1)
+//         {
+//             server.handleActivity() ;             
+//         }
+        
+//         cout<<"\nSleeping for 2 seconds : \n" ; 
+//         sleep(2) ; 
+
+//     }  
+        
+//     return 0;  
+// }  
