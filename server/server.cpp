@@ -128,7 +128,9 @@
         close(master_socket) ; 
     }
 
-    void socketHandler:: handleNewConnection()
+
+    //returns the sd of new client 
+    int socketHandler:: handleNewConnection()
     {
         puts("\nInside FD_ISSET master_socket") ; 
             if ((new_socket = accept(master_socket, 
@@ -143,12 +145,12 @@
                   (address.sin_port));  
           
             //send new connection greeting message 
-            if( send(new_socket, message, strlen(message),  MSG_NOSIGNAL) != strlen(message) )  
-            {  
-                perror("send");  
-            }  
+            // if( send(new_socket, message, strlen(message),  MSG_NOSIGNAL) != strlen(message) )  
+            // {  
+            //     perror("send");  
+            // }  
                 
-            puts("Welcome message sent successfully");  
+            // puts("Welcome message sent successfully");  
                 
             //add new socket to array of sockets 
             for (i = 0; i < max_clients; i++)  
@@ -162,6 +164,8 @@
                     break;  
                 }  
             }  
+
+            return new_socket ; 
     }
 
 
@@ -218,7 +222,6 @@
                 }  
             } 
         }
-
     }
 
 

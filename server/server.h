@@ -10,6 +10,7 @@
 #include <arpa/inet.h>    //close 
 #include <sys/types.h> 
 #include <sys/socket.h> 
+#include<bits/stdc++.h>
 #include <netinet/in.h> 
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
 
@@ -36,13 +37,13 @@ class socketHandler{
     socketHandler(void) ; 
     void bindServer() ; 
     void handleActivity() ; 
-    vector<int> handleActivity(string) ; 
+    std::vector<int> handleActivity(std::string) ; 
     void setupClientDescriptors() ; 
     void startServer() ; 
 
     int checkClientActiviy() ; 
     void closeSocket() ; 
-    void handleNewConnection() ; 
+    int handleNewConnection() ; 
     void handleIOActivity(int) ; 
 
     

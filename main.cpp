@@ -510,25 +510,32 @@ void Game::initServerForMultiplayer()
     server.startServer() ; 
 }
 
+
 void Game::handleNewConnection()
 {
-    server.handleNewConnection() ; 
+    int client_socket = server.handleNewConnection() ;
+    
+
 }
 
 void Game::handleIOActivity()
 {
-    
+    server.handleActivity() ;  
 }
 
 
-void Game::handleActivity()
+
+void Game::handleActivity(clients)
 {
     if(clients[0]==-1)
     {
+        //no client is sending any msg , its a new conn
         GameObj.handleNewConnection() ; 
     }
-    else server.handleIOActivity() ; 
+
+    else server.handleIOActivity(clients) ; 
 }
+
 
 
 int main(int argc , char * argv[]) 
