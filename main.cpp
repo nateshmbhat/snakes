@@ -553,16 +553,36 @@ void Game::handleIOActivity()
                 {
                    cout<<"\nremoving client with sd = " << clients[i] ;
                    GameObj.allSnakes.erase(GameObj.allSnakes.begin()+temp) ; 
+                   GameObj.setNoOfPlayers(GameObj.getNoOfPlayers()-1) ; 
                 }
             }
-            
+        }
+
+        else{
+            if(msg[0]==':')//Its a key press .
+            {
+                int snake_index = 0 ; 
+                for( int temp=0 ; temp<GameObj.allSnakes.size() ; temp++)
+                {
+                    if(clients[i]==GameObj.allSnakes[temp].getSocketDescriptor())
+                    {
+                        snake_index = temp   ; 
+
+                        for(int c =1 ; c<msg.length() ; c++)
+                        {
+                            allSnakes[snake_index].handleMovementKeyPress(msg[c]) ; 
+                        }
+                    }
+
+                } 
+
+            }
         }
 
         cout<<"message is : \""<<msg<<"\"" ; 
         cout.flush() ; 
-        sleep(5) ; 
+        sleep(2) ; 
         GameObj.initConsoleScreen("on") ;
-
     }
 }
 
@@ -611,7 +631,7 @@ int main(int argc , char * argv[])
         {
             activity = GameObj.checkClientActivity() ;
 
-            if(activity==1)
+            if(activity>=1)
             {
                 GameObj.handleActivity() ; 
            }
