@@ -45,7 +45,7 @@ class socketHandler{
     int checkClientActiviy() ; 
     void closeSocket() ; 
     int handleNewConnection() ; 
-    void handleIOActivity(int) ; 
+    std::string handleIOActivity(int) ; 
 
     
 };

@@ -26,7 +26,7 @@ class Game
     int noOfPlayers ;
     string gamemode ; 
     socketHandler server ; 
-    vector<int> clients ; 
+    vector<int> clients ; //contains all the LAN clien't sds
     food foodObj ;
     int center_x , center_y; 
     unsigned long int speed ; 
@@ -114,6 +114,7 @@ class snake
 
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
+    int getSocketDescriptor(){return socket_descriptor ; }
 
 
     void draw_snake(void)
@@ -454,6 +455,8 @@ void Game::initConsoleScreen(string state)
     }
 
     else if(state=="off"){
+        flushinp() ; 
+        fflush(stdin) ; 
         endwin() ; 
     }
 }
@@ -485,8 +488,6 @@ void Game::printFood(string status="old")
         generateFood() ; 
     mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
 }
-
-
 
 
 
@@ -523,12 +524,46 @@ void Game::handleNewConnection()
     snake * clientSnakePtr = new snake('A' , 'B' , 'C' , 'D' , 0 , client_socket) ; 
     GameObj.allSnakes.push_back(*clientSnakePtr) ; 
     GameObj.setNoOfPlayers(GameObj.getNoOfPlayers()+1) ; 
-    GameObj.draw_all_snakes() ; 
+
+    //Add the initial parts of the snake 
+    allSnakes[allSnakes.size()-1].add_part(center_x+5 , center_y) ; 
+    allSnakes[allSnakes.size()-1].add_part(center_x+6 , center_y) ; 
+    allSnakes[allSnakes.size()-1].add_part(center_x+7 , center_y) ;
 }
+
 
 void Game::handleIOActivity()
 {
-    server.handleActivity() ;  
+    string msg ; 
+
+    for(int i =0 ; i<clients.size() ; i++)
+    {
+        msg = server.handleIOActivity(clients[i]) ;   //handleIOActivity takes a client sd from the list of client sds which  and returns the string sent by client 
+
+        GameObj.initConsoleScreen("off") ; 
+        system("clear") ; 
+
+        //Handle disconnected clients 
+        if(msg=="")
+        {
+            cout<<"\nclient disconnected : " ;  
+            for(int temp=0 ; temp<GameObj.allSnakes.size() ; temp++)
+            {
+                if(clients[i]==GameObj.allSnakes[temp].getSocketDescriptor())
+                {
+                   cout<<"\nremoving client with sd = " << clients[i] ;
+                   GameObj.allSnakes.erase(GameObj.allSnakes.begin()+temp) ; 
+                }
+            }
+            
+        }
+
+        cout<<"message is : \""<<msg<<"\"" ; 
+        cout.flush() ; 
+        sleep(5) ; 
+        GameObj.initConsoleScreen("on") ;
+
+    }
 }
 
 

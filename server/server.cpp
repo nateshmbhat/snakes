@@ -171,22 +171,21 @@
     }
 
 
-    void socketHandler:: handleIOActivity(int client_sd)
+    std::string socketHandler::handleIOActivity(int client_sd)
     {
         //Check if it was for closing , and also read the 
         //incoming message 
-        printf("\nFD_ISSET inside the IO operation handler : client_sd : %d\n" , client_sd)  ;
+        // printf("\nFD_ISSET inside the IO operation handler : client_sd : %d\n" , client_sd)  ;
         if ((valread = read( client_sd , buffer, 1024)) <= 0)  
         {  
             //Somebody disconnected , get his details and print 
-            getpeername(client_sd , (struct sockaddr*)&address , \
-                (socklen_t*)&addrlen);  
-            printf("Host disconnected , ip %s , port %d \n" , 
-                    inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
-                
+            getpeername(client_sd , (struct sockaddr*)&address ,(socklen_t*)&addrlen);  
+            // printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+                                
             //Close the socket and mark as 0 in list for reuse 
             close( client_sd );  
             client_socket[i] = 0;  
+            return "" ; 
         }  
             
         //Echo back the message that came in 
@@ -195,9 +194,11 @@
             //set the string terminating NULL byte on the end 
             //of the data read 
             buffer[valread] = '\0';  
-            std::cout<< "\nMessage from client : " << buffer << " ; Length : " <<valread ;
+            // std::cout<< "\nMessage from client : " << buffer << " ; Length : " <<valread ;
+            std::string message = buffer ; //storing cstring to std::string 
+            return message ; 
 
-            send(client_sd , buffer , strlen(buffer) , 0 );  
+            // send(client_sd , buffer , strlen(buffer) , 0 );  
         }  
     }
 
