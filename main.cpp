@@ -96,17 +96,20 @@ class snake
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
+    int socket_descriptor ; 
     int score ;
     char keyUp , keyDown , keyRight , keyLeft ; 
     int id ; 
 
     public :
-    snake(char up , char down , char right , char left , int id )
+    snake(char up , char down , char right , char left , int snakeid  , int sd = -1)
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
         score = 0 ; 
         snakeDirection = "right" ; 
-        id = id ; 
+        id = snakeid ; 
+        socket_descriptor = sd ; 
+         
     }
 
     int getScore(void){return score ; }
@@ -517,7 +520,10 @@ void Game::initServerForMultiplayer()
 void Game::handleNewConnection()
 {
     int client_socket = server.handleNewConnection() ;
-
+    snake * clientSnakePtr = new snake('A' , 'B' , 'C' , 'D' , 0 , client_socket) ; 
+    GameObj.allSnakes.push_back(*clientSnakePtr) ; 
+    GameObj.setNoOfPlayers(GameObj.getNoOfPlayers()+1) ; 
+    GameObj.draw_all_snakes() ; 
 }
 
 void Game::handleIOActivity()
