@@ -87,12 +87,31 @@ void Game::setFoodPos(int x , int y)
 
 void Game::handleMessageFromServer(string msg)
 {
-    for(int i =0 ; i<msg.length()  ; i++)
+    if(msg[0]==':')
     {
-        if(msg[i]=='-')
-            GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
-        else if(msg[i]=='+')
-            GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
+        int camma = msg.find(',') ; 
+        string str_x = msg.substr(1 , camma-1) ;
+        string str_y = msg.substr(camma+1) ; 
+
+        GameObj.initConsoleScreen("off") ; 
+        int x  = stoi(str_x)  , y = stoi(str_y) ; 
+        cout<<"x = "<<x <<" y= "<<y ; 
+        cout.flush() ;
+
+        GameObj.initConsoleScreen("on") ; 
+
+        GameObj.setFoodPos(x , y) ; 
+
+    }
+
+    else{
+        for(int i =0 ; i<msg.length()  ; i++)
+        {
+            if(msg[i]=='-')
+                GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
+            else if(msg[i]=='+')
+                GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
+        }
     }
 }
 
@@ -237,12 +256,11 @@ class SocketHandler{
         if(val>0)
         {
             recv(sock , buffer, 1024, 0);
-            cout<<"got message : " <<buffer ; 
+            // cout<<"got message : " <<buffer ; 
             
             GameObj.handleMessageFromServer(string(buffer)) ;
 
             //Handle the message from server and interpret the results . Call the message handler method 
-            sleep(1) ; 
         }
 
         else if(val==-1)

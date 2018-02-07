@@ -40,7 +40,7 @@
     }
 
 
-    void socketHandler:: setupClientDescriptors()
+    void socketHandler::setupClientDescriptors()
     {
         //clear the socket set 
         FD_ZERO(&readfds);  
@@ -67,7 +67,7 @@
     }
 
 
-    void socketHandler:: startServer()
+    void socketHandler::startServer()
     {
         printf("Listener on port %d \n",PORT );  
             
@@ -86,7 +86,7 @@
 
 
 //initialise all client_socket[] to 0 so not checked 
-    socketHandler:: socketHandler(void)
+    socketHandler::socketHandler(void)
     {
         max_clients = 30 ; 
         valread = 0 ; 
@@ -105,7 +105,7 @@
 
 
 
-    int socketHandler:: checkClientActiviy()
+    int socketHandler::checkClientActiviy()
     {
         //wait for an activity on one of the sockets , timeout is NULL , 
         //so wait indefinitely 
@@ -125,7 +125,7 @@
 
 
 
-    void socketHandler:: closeSocket()
+    void socketHandler::closeSocket()
     {
         close(master_socket) ; 
     }

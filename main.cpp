@@ -1,7 +1,9 @@
 #include<bits/stdc++.h>
 #include<iostream>
 #include<unistd.h>
+#include<string>
 #include<ncurses.h>
+#include<cstdlib>
 #include "./server/server.h"
 
 using namespace std ; 
@@ -48,6 +50,7 @@ class Game
     void MainEventLoop() ; 
     void ask_no_players(string) ; 
     void moveAllSnakes() ; 
+    void LAN_sendFoodCoordinates(int , int ) ; 
     void setFoodPos(int , int) ;
     void handleNewConnection() ; 
     void handleIOActivity() ; 
@@ -497,6 +500,23 @@ food Game::getFoodPos()
 }
 
 
+//sends the coordinates of food to all the clients  :15,20
+void Game::LAN_sendFoodCoordinates(int x , int y)
+{
+        for(int temp= 0 ; temp<allSnakes.size() ; temp++)
+        {
+            int sd  = allSnakes[temp].getSocketDescriptor() ; 
+            if(sd>0)
+            {
+                char foodcoord[20] ; 
+                sprintf(foodcoord , ":%d,%d" ,x , y) ; 
+
+                server.sendData(sd , string(foodcoord)) ; 
+            }
+        }
+
+}
+
 
 void Game::generateFood()
 {
@@ -504,17 +524,22 @@ void Game::generateFood()
     if(!x)x = 2 ; 
     if(!y) y = 2 ; 
     mvprintw(y, x ,"#") ;   
-    GameObj.setFoodPos(x , y) ;
+    setFoodPos(x , y) ;
+
+    if(gamemode=="multi")
+    {
+        LAN_sendFoodCoordinates(x , y) ; 
+    }
 }
 
 void Game::printFood(string status="old")
 {
     if(status=="new")
-        GameObj.generateFood() ; 
-    
-    if(!GameObj.getFoodX() && !GameObj.getFoodY())
         generateFood() ; 
-    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
+    
+    if(!getFoodX() && !getFoodY())
+        generateFood() ; 
+    mvprintw(getFoodY(), getFoodX() ,"#") ;   
 }
 
 
@@ -586,8 +611,9 @@ void Game::handleIOActivity()
             }
         }
 
+
         else{
-            if(msg[0]==':')//Its a key press at client 
+            // if(msg[0]=='A' || msg[0] =='B' || msg[0]=='C' || msg[0]=='D')//Its a key press at client 
             {
                 int snake_index = 0 ; 
                 for( int temp=0 ; temp<GameObj.allSnakes.size() ; temp++)
@@ -596,7 +622,7 @@ void Game::handleIOActivity()
                     {
                         snake_index = temp   ; 
 
-                        for(int c =1 ; c<msg.length() ; c++)
+                        for(int c =0 ; c<msg.length() ; c++)
                         {
                             allSnakes[snake_index].handleMovementKeyPress(msg[c]) ; 
                         }
