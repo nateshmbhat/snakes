@@ -202,6 +202,11 @@
         }  
     }
 
+    void socketHandler::sendData(int client_sd , std::string msg)
+    {
+        send(client_sd , msg.c_str() , msg.length() , 0) ; 
+    }
+
 
     // void socketHandler:: handleActivity()
     // {

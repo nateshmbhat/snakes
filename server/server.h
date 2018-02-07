@@ -41,7 +41,7 @@ class socketHandler{
     std::vector<int> handleActivity() ; 
     void setupClientDescriptors() ; 
     void startServer() ; 
-
+    void sendData(int , std::string) ; 
     int checkClientActiviy() ; 
     void closeSocket() ; 
     int handleNewConnection() ; 

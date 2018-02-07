@@ -380,14 +380,42 @@ void Game::KeyPressHandler()
         }
 
 
-        //INcrease the snake speed
+        //Decrease the snake speed
         if(ch==45)
         {
             GameObj.setSpeed(GameObj.getSpeed()+3000) ;
+            if(GameObj.getGameMode()=="multi")
+            {
+                for(int temp =0 ; temp<allSnakes.size() ; temp++)
+                {
+                    int sd = allSnakes[temp].getSocketDescriptor() ; 
+                    if(sd>0)
+                    {
+                        server.sendData(sd , "-") ; 
+                    }
+                }
+            }
         }
-        //Decrease the snake speed
+
+
+        //Increase the snake speed
         if(ch==43)
+        {
             GameObj.setSpeed(GameObj.getSpeed()-3000); 
+            if(GameObj.getGameMode()=="multi")
+            {
+                for(int temp =0 ; temp<allSnakes.size() ; temp++)
+                {
+                    int sd = allSnakes[temp].getSocketDescriptor() ; 
+                    if(sd>0)
+                    {
+                        server.sendData(sd , "+") ; 
+                    }
+                }
+
+            }
+
+        }
 
     }
     
@@ -559,7 +587,7 @@ void Game::handleIOActivity()
         }
 
         else{
-            if(msg[0]==':')//Its a key press .
+            if(msg[0]==':')//Its a key press at client 
             {
                 int snake_index = 0 ; 
                 for( int temp=0 ; temp<GameObj.allSnakes.size() ; temp++)
@@ -608,6 +636,7 @@ int Game::checkClientActivity(){
 
 
 
+//MAIN FUNCTION 
 int main(int argc , char * argv[]) 
 {
     
@@ -624,7 +653,6 @@ int main(int argc , char * argv[])
 
     for(;;)
     {
-        
         GameObj.KeyPressHandler() ; //Handles key presses 
 
         if(GameObj.getGameMode()=="multi")
@@ -634,9 +662,10 @@ int main(int argc , char * argv[])
             if(activity>=1)
             {
                 GameObj.handleActivity() ; 
-           }
+            }
             
         }
+
 
         flushinp();
         clear() ;
