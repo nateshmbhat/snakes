@@ -23,6 +23,7 @@ class socketHandler{
     int max_sd;  
     struct sockaddr_in address;  
     char message[50] ; 
+    struct timeval timeout; 
         
     char buffer[1025];  //data buffer of 1K 
         
@@ -36,8 +37,8 @@ class socketHandler{
 
     socketHandler(void) ; 
     void bindServer() ; 
-    void handleActivity() ; 
-    std::vector<int> handleActivity(std::string) ; 
+    // void handleActivity() ; 
+    std::vector<int> handleActivity() ; 
     void setupClientDescriptors() ; 
     void startServer() ; 
 

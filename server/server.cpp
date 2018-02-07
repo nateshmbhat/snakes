@@ -1,4 +1,4 @@
-#include<"server.h">
+#include "server.h"
 
 
 
@@ -93,6 +93,8 @@
         PORT = 8888 ; 
         opt = true ; 
 
+        timeout.tv_sec = timeout.tv_usec = 0 ; 
+
         //initialise all client_socket[] to 0 so not checked 
         memset(client_socket , 0 , sizeof(client_socket)) ; 
         memset(&address, '0', sizeof(address));
@@ -110,7 +112,7 @@
         setupClientDescriptors() ; 
 
         puts("\nBefore select : \n") ; 
-        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);  
+        activity = select( max_sd + 1 , &readfds , NULL , NULL , &timeout);  
         printf("\nSelect returned : %d \n" , activity) ; 
       
         if ((activity < 0) && (errno!=EINTR))  
@@ -193,42 +195,42 @@
             //set the string terminating NULL byte on the end 
             //of the data read 
             buffer[valread] = '\0';  
-            cout<< "\nMessage from client : " << buffer << " ; Length : " <<valread ;
+            std::cout<< "\nMessage from client : " << buffer << " ; Length : " <<valread ;
 
             send(client_sd , buffer , strlen(buffer) , 0 );  
         }  
     }
 
 
-    void socketHandler:: handleActivity()
-    {
-        //If something happened on the master socket , 
-        //then its an incoming connection 
-        if (FD_ISSET(master_socket, &readfds))  
-        {  
-           handleNewConnection() ;  
-        }  
+    // void socketHandler:: handleActivity()
+    // {
+    //     //If something happened on the master socket , 
+    //     //then its an incoming connection 
+    //     if (FD_ISSET(master_socket, &readfds))  
+    //     {  
+    //        handleNewConnection() ;  
+    //     }  
 
-        else{
-            //else its some IO operation on some other socket
-            for (i = 0; i < max_clients; i++)  
-            {  
-                sd = client_socket[i];  
+    //     else{
+    //         //else its some IO operation on some other socket
+    //         for (i = 0; i < max_clients; i++)  
+    //         {  
+    //             sd = client_socket[i];  
                     
-                if (FD_ISSET( sd , &readfds))  
-                {  
-                    printf("\nCalling IO Activity handler : " ) ; 
-                    handleIOActivity(sd) ;                     
-                }  
-            } 
-        }
-    }
+    //             if (FD_ISSET( sd , &readfds))  
+    //             {  
+    //                 printf("\nCalling IO Activity handler : " ) ; 
+    //                 handleIOActivity(sd) ;                     
+    //             }  
+    //         } 
+    //     }
+    // }
 
 
     //Returns array with -1 if its a new connection else returns a list of client sds 
-    vector<int> socketHandler:: handleActivity(string dummy)
+    std::vector<int> socketHandler::handleActivity()
     {
-        vector <int> descriptors ; 
+        std::vector <int> descriptors ; 
         //If something happened on the master socket , 
         //then its an incoming connection 
         if (FD_ISSET(master_socket, &readfds))  

@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp"
     }
 }

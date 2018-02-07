@@ -2,7 +2,7 @@
 #include<iostream>
 #include<unistd.h>
 #include<ncurses.h>
-#include<"./server/server.h">
+#include "./server/server.h"
 
 using namespace std ; 
 
@@ -52,8 +52,11 @@ class Game
     void handleNewConnection() ; 
     void handleIOActivity() ; 
     void handleMessageFromServer(string ) ;
-    void initServerForMultiplayer(socketHandler & ) ; 
-    int getFoodX() ; 
+    int checkClientActivity() ; //returns activity number
+    void initServerForMultiplayer() ; 
+    void setClientsList() ; 
+    void handleActivity() ; 
+    int getFoodX() 
     {return foodObj.x ; }
     int getFoodY()
     {return foodObj.y; }
@@ -514,7 +517,6 @@ void Game::initServerForMultiplayer()
 void Game::handleNewConnection()
 {
     int client_socket = server.handleNewConnection() ;
-    
 
 }
 
@@ -525,15 +527,22 @@ void Game::handleIOActivity()
 
 
 
-void Game::handleActivity(clients)
+void Game::handleActivity()
 {
+    //set the clients of game object ; 
+    clients = server.handleActivity() ; 
+
     if(clients[0]==-1)
     {
         //no client is sending any msg , its a new conn
         GameObj.handleNewConnection() ; 
     }
 
-    else server.handleIOActivity(clients) ; 
+    else GameObj.handleIOActivity() ; 
+}
+
+int Game::checkClientActivity(){
+    return server.checkClientActiviy() ; 
 }
 
 
@@ -542,6 +551,7 @@ int main(int argc , char * argv[])
 {
     
     HANDLE_EVERYTHING_TILL_EVENT_LOOP() ; 
+    int activity ; 
     
 
     if(GameObj.getGameMode()=="multi")
@@ -558,13 +568,11 @@ int main(int argc , char * argv[])
 
         if(GameObj.getGameMode()=="multi")
         {
-            activity = server.checkClientActiviy() ;
+            activity = GameObj.checkClientActivity() ;
 
             if(activity==1)
             {
-                GameObj.setClientsList(server.handleActivity("dummy")) ; 
-                GameObj.handleActivity(clients) ; 
-
+                GameObj.handleActivity() ; 
            }
             
         }
