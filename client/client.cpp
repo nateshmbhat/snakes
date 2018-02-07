@@ -93,12 +93,12 @@ void Game::handleMessageFromServer(string msg)
         string str_x = msg.substr(1 , camma-1) ;
         string str_y = msg.substr(camma+1) ; 
 
-        GameObj.initConsoleScreen("off") ; 
+        // GameObj.initConsoleScreen("off") ; 
         int x  = stoi(str_x)  , y = stoi(str_y) ; 
-        cout<<"x = "<<x <<" y= "<<y ; 
-        cout.flush() ;
+        // cout<<"x = "<<x <<" y= "<<y ; 
+        // cout.flush() ;
 
-        GameObj.initConsoleScreen("on") ; 
+        // GameObj.initConsoleScreen("on") ; 
 
         GameObj.setFoodPos(x , y) ; 
 
@@ -191,7 +191,7 @@ class SocketHandler{
     void sendData(string message)
     {
         send(sock , message.c_str() , message.length() , 0 );
-        cout<<"Message sent : " << message ; 
+        // cout<<"Message sent : " << message ; 
     }
 
     //creates and assigns the fd value to sock member
@@ -491,17 +491,18 @@ int main(int argc , char * argv[])
     system("clear") ;     
     SocketHandler sock_obj ; 
     string serverAddress ; 
+
+    string player_name ; 
+    cout<<"Enter your name : " ; 
+    cin.ignore() ; 
+    getline(cin , player_name) ; 
+
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
 
     //Set some socket options
     sock_obj.connectToServer( serverAddress , 8888) ; 
 
-    string player_name ; 
-    cout<<"Enter your name : " ; 
-
-    cin.ignore() ; 
-    getline(cin , player_name) ; 
     
     sock_obj.sendData("init " + player_name) ; 
     // sock_obj.readData() ; 

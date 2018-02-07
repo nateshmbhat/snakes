@@ -593,8 +593,8 @@ void Game::handleIOActivity()
     {
         msg = server.handleIOActivity(clients[i]) ;   //handleIOActivity takes a client sd from the list of client sds which  and returns the string sent by client 
 
-        GameObj.initConsoleScreen("off") ; 
-        system("clear") ; 
+        // GameObj.initConsoleScreen("off") ; 
+        // system("clear") ; 
 
         //Handle disconnected clients 
         if(msg=="")
@@ -633,10 +633,10 @@ void Game::handleIOActivity()
             }
         }
 
-        cout<<"message is : \""<<msg<<"\"" ; 
-        cout.flush() ; 
-        sleep(2) ; 
-        GameObj.initConsoleScreen("on") ;
+        // cout<<"message is : \""<<msg<<"\"" ; 
+        // cout.flush() ; 
+        // sleep(2) ; 
+        // GameObj.initConsoleScreen("on") ;
     }
 }
 
