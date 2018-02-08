@@ -89,6 +89,7 @@ class Game
     int getCenterY(){return center_y ; }
     food getFoodPos() ;
     int getNoOfPlayers(){return noOfPlayers ; }
+    void reset_max_screen() ; 
     void setNoOfPlayers(int n){noOfPlayers  = n ; }
     void initConsoleScreen(string ) ; 
     unsigned long int setSpeed(unsigned long int s){speed = s>200000?200000:s<10000?10000:s ; return speed ; } //Speed Increments by 3000
@@ -105,11 +106,17 @@ void Game::setFoodPos(int x , int y)
 
 void Game::handleMessageFromServer(string msg)
 {
-    if(msg[0]==':')
+    cout<<"\n\nServer sent :"<<msg ; 
+    cout.flush() ; 
+    sleep(3) ; 
+
+    if(msg.find(":")!=string::npos)
     {
-        int camma = msg.find(',') ; 
-        string str_x = msg.substr(1 , camma-1) ;
-        string str_y = msg.substr(camma+1) ; 
+        int start_colon = msg.find(":") ; 
+        
+        int camma = msg.find(",") ; 
+        string str_x = msg.substr(start_colon+1 , camma-1) ;
+        string str_y = msg.substr(camma+1 , 3) ; 
 
         // GameObj.initConsoleScreen("off") ; 
         int x  = stoi(str_x)  , y = stoi(str_y) ; 
@@ -132,6 +139,7 @@ void Game::handleMessageFromServer(string msg)
         }
     }
 }
+
 
 //Initialise the console with the decision to turn off or on the enter key and cursor
 void Game::initConsoleScreen(string state)
@@ -180,11 +188,8 @@ void Game::printFood(string status="old")
     
     if(!GameObj.getFoodX() && !GameObj.getFoodY())
         generateFood() ; 
-    mvprintw(GameObj.getFoodY(), GameObj.getFoodX() ,"#") ;   
+    mvprintw(foodObj.y, foodObj.x ,"#") ;   
 }
-
-
-
 
 
 
@@ -388,6 +393,9 @@ class snake
             add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
             setScore(getScore()+1) ; 
             GameObj.sock_obj.sendData("#") ; 
+            
+            //clear that food now  
+            GameObj.setFoodPos(-10 , -10) ; 
             // GameObjintFood("new") ;
         }
 
@@ -492,6 +500,14 @@ void printSpeed(snake snk)
 }
 
 
+void Game::reset_max_screen()
+{
+    getmaxyx(stdscr , max_y , max_x ) ; 
+}
+
+
+
+
 
 int main(int argc , char * argv[]) 
 {
@@ -526,6 +542,7 @@ int main(int argc , char * argv[])
     char ch ; 
     for(;;)
     {
+        GameObj.reset_max_screen() ; 
 
         if((ch = getch())!=ERR)
         {

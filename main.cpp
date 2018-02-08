@@ -14,6 +14,7 @@ class Game ;
 //global variables for the program 
 int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
 
+std::ostringstream ss;
 
 typedef struct food
 {
@@ -44,6 +45,7 @@ class Game
     }
     
     void generateFood() ; 
+    void reset_max_screen() ; 
     void draw_all_snakes() ; 
     void KeyPressHandler() ; 
     void printFood(string ) ;
@@ -503,13 +505,17 @@ food Game::getFoodPos()
 //sends the coordinates of food to all the clients  :15,20
 void Game::LAN_sendFoodCoordinates(int x , int y)
 {
+        // cout<<"\nLAN coordiantes to send to client are :"<<x <<","<<y <<endl ; 
+        // cout.flush() ; 
+        // sleep(2) ; 
         for(int temp= 0 ; temp<allSnakes.size() ; temp++)
         {
             int sd  = allSnakes[temp].getSocketDescriptor() ; 
+
             if(sd>0)
             {
                 char foodcoord[20] ; 
-                sprintf(foodcoord , ":%d,%d" ,x , y) ; 
+                sprintf(foodcoord , ":%03d,%03d" ,x , y) ; 
 
                 server.sendData(sd , string(foodcoord)) ; 
             }
@@ -525,11 +531,6 @@ void Game::generateFood()
     if(!y) y = 2 ; 
     mvprintw(y, x ,"#") ;   
     setFoodPos(x , y) ;
-
-    if(gamemode=="multi")
-    {
-        LAN_sendFoodCoordinates(x , y) ; 
-    }
 }
 
 void Game::printFood(string status="old")
@@ -610,10 +611,24 @@ void Game::handleIOActivity()
                 }
             }
         }
+        
+        // cout<<"\n\nMSG is :" <<msg <<"\n\n" ;  
+        // cout.flush() ; 
+        // sleep(2) ; 
 
-        if(msg=="#")
+
+        if(msg.find("#")!=string::npos)
         {
+            cout<<"\nmsg.find(#) = " <<msg.find("#")<<"\n" ; 
+            cout.flush()  ; 
+            sleep(2) ; 
             printFood("new") ; 
+
+            if(gamemode=="multi")
+            {
+                LAN_sendFoodCoordinates( getFoodX() , getFoodY()) ; 
+            }
+
         }
 
 
@@ -665,11 +680,18 @@ int Game::checkClientActivity(){
     return server.checkClientActiviy() ; 
 }
 
+void Game::reset_max_screen()
+{
+    getmaxyx(stdscr , max_y , max_x ) ; 
+}
+
+
 
 
 //MAIN FUNCTION 
 int main(int argc , char * argv[]) 
 {
+
     
     HANDLE_EVERYTHING_TILL_EVENT_LOOP() ; 
     int activity ; 
@@ -684,6 +706,7 @@ int main(int argc , char * argv[])
 
     for(;;)
     {
+        GameObj.reset_max_screen() ; 
         GameObj.KeyPressHandler() ; //Handles key presses 
 
         if(GameObj.getGameMode()=="multi")
