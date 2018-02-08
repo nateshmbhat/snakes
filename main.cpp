@@ -611,14 +611,19 @@ void Game::handleIOActivity()
             }
         }
 
+        if(msg=="#")
+        {
+            printFood("new") ; 
+        }
+
 
         else{
             // if(msg[0]=='A' || msg[0] =='B' || msg[0]=='C' || msg[0]=='D')//Its a key press at client 
             {
                 int snake_index = 0 ; 
-                for( int temp=0 ; temp<GameObj.allSnakes.size() ; temp++)
+                for( int temp=0 ; temp<allSnakes.size() ; temp++)
                 {
-                    if(clients[i]==GameObj.allSnakes[temp].getSocketDescriptor())
+                    if(clients[i]==allSnakes[temp].getSocketDescriptor())
                     {
                         snake_index = temp   ; 
 
@@ -707,34 +712,3 @@ int main(int argc , char * argv[])
  
 }
 
-
-
-
-
-
-// int main(int argc , char *argv[])  
-// {  
-//     socketHandler server ; 
-//     server.bindServer() ; 
-//     server.setupClientDescriptors() ; 
-//     server.startServer() ; 
-
-//     int activity ;
-
-//     while(true)  
-//     {  
-   
-//         activity = server.checkClientActiviy() ;
-
-//         if(activity==1)
-//         {
-//             server.handleActivity() ;             
-//         }
-        
-//         cout<<"\nSleeping for 2 seconds : \n" ; 
-//         sleep(2) ; 
-
-//     }  
-        
-//     return 0;  
-// }  

@@ -1,8 +1,5 @@
 #include "server.h"
 
-
-
-
     void socketHandler:: initServerSocket()
     {
         //create a master socket 

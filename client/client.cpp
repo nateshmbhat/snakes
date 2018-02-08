@@ -39,7 +39,24 @@ typedef struct food
 }food ; 
 
 
+class SocketHandler{
 
+    struct sockaddr_in address;
+    struct sockaddr_in serv_addr;
+    int sock ;  
+    char buffer[1024]  ; 
+    fd_set set;
+    struct timeval timeout;
+
+    public : 
+    SocketHandler(void) ; 
+    void sendData(string) ; 
+    void createClientSocket(void) ; 
+    void initServerAddress(string , int) ; 
+    int connectToServer(string , int) ; 
+    void readData() ; 
+    void closeSocket() ; 
+};
 
 
 class Game 
@@ -59,6 +76,7 @@ class Game
         foodObj.x  = foodObj.y = 0 ;
     }
     
+    SocketHandler sock_obj; 
     void generateFood() ; 
     void printFood(string ) ;
     void setFoodPos(int , int) ;
@@ -168,19 +186,10 @@ void Game::printFood(string status="old")
 
 
 
-class SocketHandler{
 
-    struct sockaddr_in address;
-    struct sockaddr_in serv_addr;
-    int sock ;  
-    char buffer[1024]  ; 
-    fd_set set;
-    struct timeval timeout;
-
-    public : 
 
     //initialise all client_socket[] to 0 so not checked 
-    SocketHandler(void)
+    SocketHandler::SocketHandler(void)
     {
         sock = 0  ;  
         memset(&serv_addr, '0', sizeof(serv_addr));
@@ -188,14 +197,14 @@ class SocketHandler{
         timeout.tv_sec = timeout.tv_usec = 0 ; 
     }
 
-    void sendData(string message)
+    void SocketHandler::sendData(string message)
     {
         send(sock , message.c_str() , message.length() , 0 );
         // cout<<"Message sent : " << message ; 
     }
 
     //creates and assigns the fd value to sock member
-    void createClientSocket(void)
+    void SocketHandler::createClientSocket(void)
     {
         int opt= 1 ;
         sock = socket(AF_INET , SOCK_STREAM , 0) ;
@@ -215,7 +224,7 @@ class SocketHandler{
         }
     }
 
-    void initServerAddress(string address , int port )
+    void SocketHandler::initServerAddress(string address , int port )
     {
     
         serv_addr.sin_family = AF_INET;
@@ -229,7 +238,7 @@ class SocketHandler{
     }
 
 
-    int connectToServer(string address , int port)
+    int SocketHandler::connectToServer(string address , int port)
     {
         createClientSocket() ; 
         initServerAddress(address , port) ; 
@@ -243,7 +252,7 @@ class SocketHandler{
 
 
 
-    void readData()
+    void SocketHandler::readData()
     {
         // valread = read( sock , buffer, 1024);
         int val ; 
@@ -270,11 +279,10 @@ class SocketHandler{
     }
 
 
-    void closeSocket()
+    void SocketHandler::closeSocket()
     {
         close(sock) ; 
     }
-};
 
 
 
@@ -379,7 +387,8 @@ class snake
         {
             add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
             setScore(getScore()+1) ; 
-            GameObj.printFood("new") ;
+            GameObj.sock_obj.sendData("#") ; 
+            // GameObjintFood("new") ;
         }
 
         draw_snake() ;
@@ -489,23 +498,23 @@ int main(int argc , char * argv[])
 
     srand(time(NULL)) ;
     system("clear") ;     
-    SocketHandler sock_obj ; 
     string serverAddress ; 
-
     string player_name ; 
     cout<<"Enter your name : " ; 
+
     cin.ignore() ; 
     getline(cin , player_name) ; 
+
 
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
 
     //Set some socket options
-    sock_obj.connectToServer( serverAddress , 8888) ; 
+    GameObj.sock_obj.connectToServer(serverAddress , 8888) ; 
 
     
-    sock_obj.sendData("init " + player_name) ; 
-    // sock_obj.readData() ; 
+    GameObj.sock_obj.sendData("init " + player_name) ; 
+    // GameObj.sock_obj.readData() ; 
 
    
     GameObj.initConsoleScreen("on") ; 
@@ -525,7 +534,7 @@ int main(int argc , char * argv[])
                 getch() ; // clear and reject 91 from buffer
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
                 string ch_string(1,ch) ; 
-                sock_obj.sendData(ch_string) ; 
+                GameObj.sock_obj.sendData(ch_string) ; 
                 first_snake.handleMovementKeyPress(ch) ; 
             }
         }
@@ -541,7 +550,7 @@ int main(int argc , char * argv[])
 
 
         //Read for any incoming data from server ,,,
-        sock_obj.readData() ; 
+        GameObj.sock_obj.readData() ; 
 
         usleep(GameObj.getSpeed()) ;
     }
