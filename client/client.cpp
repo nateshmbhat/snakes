@@ -4,6 +4,7 @@
 #include <string.h>   //strlen 
 #include <stdlib.h> 
 #include <errno.h> 
+#include<fstream>
 #include<iostream>
 #include<bits/stdc++.h>
 #include<iostream>
@@ -19,7 +20,6 @@ using namespace std ;
 #define TRUE   1 
 #define FALSE  0 
 
-
 //Used classes 
 class SocketHandler ; 
 class Game ; 
@@ -30,6 +30,7 @@ class snake_part ;
 
 //global variables for the program 
 int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
+ofstream logfile;
 
 
 typedef struct food
@@ -106,9 +107,10 @@ void Game::setFoodPos(int x , int y)
 
 void Game::handleMessageFromServer(string msg)
 {
-    cout<<"\n\nServer sent :"<<msg ; 
-    cout.flush() ; 
-    sleep(3) ; 
+    // cout<<"\n\nServer sent :"<<msg ; 
+    // cout.flush() ; 
+    // sleep(3) ; 
+    logfile<<"\nServer sent msg:" <<msg <<"\n" ; 
 
     if(msg.find(":")!=string::npos)
     {
@@ -178,8 +180,9 @@ void Game::generateFood()
     if(!x)x = 2 ; 
     if(!y) y = 2 ; 
     mvprintw(y, x ,"#") ;   
-    GameObj.setFoodPos(x , y) ;
+    setFoodPos(x , y) ;
 }
+
 
 void Game::printFood(string status="old")
 {
@@ -204,6 +207,7 @@ void Game::printFood(string status="old")
 
     void SocketHandler::sendData(string message)
     {
+        logfile<<"\nSending data to server : \n" <<message <<"\n" ; 
         send(sock , message.c_str() , message.length() , 0 );
         // cout<<"Message sent : " << message ; 
     }
@@ -511,6 +515,7 @@ void Game::reset_max_screen()
 
 int main(int argc , char * argv[]) 
 {
+    logfile.open ("logfileclient.log" , ios::out);
 
     srand(time(NULL)) ;
     system("clear") ;     

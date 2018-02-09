@@ -5,14 +5,17 @@
 #include<ncurses.h>
 #include<cstdlib>
 #include "./server/server.h"
+#include<fstream>
 
 using namespace std ; 
 
 class snake ; 
 class Game ;
 
+
 //global variables for the program 
 int max_x  = 0 , max_y = 0  ;  //Make max_x and max_y as global since the values are used by many methods 
+ofstream logfile;
 
 std::ostringstream ss;
 
@@ -45,6 +48,7 @@ class Game
     }
     
     void generateFood() ; 
+    int getSnakeIndexFromDescriptor(int) ; 
     void reset_max_screen() ; 
     void draw_all_snakes() ; 
     void KeyPressHandler() ; 
@@ -527,10 +531,17 @@ void Game::LAN_sendFoodCoordinates(int x , int y)
 void Game::generateFood()
 {
     int x = random()%max_x , y = random()%max_y  ; 
+    logfile<<"\n\nGenerating food at pos:"<<x <<","<<y<<"\n\n" ; 
+
     if(!x)x = 2 ; 
     if(!y) y = 2 ; 
     mvprintw(y, x ,"#") ;   
     setFoodPos(x , y) ;
+
+    // if(gamemode=="multi")
+    // {
+    //     LAN_sendFoodCoordinates( getFoodX() , getFoodY()) ; 
+    // }
 }
 
 void Game::printFood(string status="old")
@@ -583,33 +594,30 @@ void Game::handleNewConnection()
     allSnakes[allSnakes.size()-1].add_part(center_x+5 , center_y) ; 
     allSnakes[allSnakes.size()-1].add_part(center_x+6 , center_y) ; 
     allSnakes[allSnakes.size()-1].add_part(center_x+7 , center_y) ;
+
+    GameObj.generateFood() ; 
 }
 
 
 void Game::handleIOActivity()
 {
     string msg ; 
+    int snake_index ; 
 
     for(int i =0 ; i<clients.size() ; i++)
     {
+        snake_index = getSnakeIndexFromDescriptor(clients[i]) ; 
+
         msg = server.handleIOActivity(clients[i]) ;   //handleIOActivity takes a client sd from the list of client sds which  and returns the string sent by client 
 
-        // GameObj.initConsoleScreen("off") ; 
-        // system("clear") ; 
 
         //Handle disconnected clients 
         if(msg=="")
         {
             cout<<"\nclient disconnected : " ;  
-            for(int temp=0 ; temp<GameObj.allSnakes.size() ; temp++)
-            {
-                if(clients[i]==GameObj.allSnakes[temp].getSocketDescriptor())
-                {
-                   cout<<"\nremoving client with sd = " << clients[i] ;
-                   GameObj.allSnakes.erase(GameObj.allSnakes.begin()+temp) ; 
-                   GameObj.setNoOfPlayers(GameObj.getNoOfPlayers()-1) ; 
-                }
-            }
+            cout<<"\nremoving client with sd = " << clients[i] ;
+            allSnakes.erase(allSnakes.begin()+snake_index) ; 
+            setNoOfPlayers(getNoOfPlayers()-1) ; 
         }
         
         // cout<<"\n\nMSG is :" <<msg <<"\n\n" ;  
@@ -617,47 +625,47 @@ void Game::handleIOActivity()
         // sleep(2) ; 
 
 
-        if(msg.find("#")!=string::npos)
-        {
-            cout<<"\nmsg.find(#) = " <<msg.find("#")<<"\n" ; 
-            cout.flush()  ; 
-            sleep(2) ; 
-            printFood("new") ; 
-
-            if(gamemode=="multi")
-            {
-                LAN_sendFoodCoordinates( getFoodX() , getFoodY()) ; 
-            }
-
-        }
+        //Client has eaten the food . now send new coord
 
 
+        //Handle key press
         else{
-            // if(msg[0]=='A' || msg[0] =='B' || msg[0]=='C' || msg[0]=='D')//Its a key press at client 
-            {
-                int snake_index = 0 ; 
-                for( int temp=0 ; temp<allSnakes.size() ; temp++)
+                for(int c = 0 ; c<msg.length() ; c++)
                 {
-                    if(clients[i]==allSnakes[temp].getSocketDescriptor())
+                    if(msg[c]=='#')
                     {
-                        snake_index = temp   ; 
+                        logfile<<"\nMessage from clietn handler :\n "<<msg<<"\n" ; 
+                        
+                        //Client has eaten a food . Increase its part 
+                        allSnakes[snake_index].add_part(allSnakes[snake_index].getHeadX() , allSnakes[snake_index].getHeadY()) ; 
+                        
+                        printFood("new") ; 
 
-                        for(int c =0 ; c<msg.length() ; c++)
+                        if(gamemode=="multi")
                         {
-                            allSnakes[snake_index].handleMovementKeyPress(msg[c]) ; 
+                            LAN_sendFoodCoordinates( getFoodX() , getFoodY()) ; 
                         }
+
                     }
 
-                } 
+                    else if(msg[c]=='A' or msg[c]=='B' or msg[c]=='C' or msg[c]=='D')
+                        allSnakes[snake_index].handleMovementKeyPress(msg[c]) ; 
+                }
+        }
+    }
+}
 
+
+
+int Game::getSnakeIndexFromDescriptor(int sd)
+{
+    for(int temp=0 ; temp< allSnakes.size() ; temp++)
+        {
+            if(sd ==allSnakes[temp].getSocketDescriptor())
+            {
+                return temp ; 
             }
         }
-
-        // cout<<"message is : \""<<msg<<"\"" ; 
-        // cout.flush() ; 
-        // sleep(2) ; 
-        // GameObj.initConsoleScreen("on") ;
-    }
 }
 
 
@@ -670,10 +678,10 @@ void Game::handleActivity()
     if(clients[0]==-1)
     {
         //no client is sending any msg , its a new conn
-        GameObj.handleNewConnection() ; 
+        handleNewConnection() ; 
     }
 
-    else GameObj.handleIOActivity() ; 
+    else handleIOActivity() ; 
 }
 
 int Game::checkClientActivity(){
@@ -687,11 +695,22 @@ void Game::reset_max_screen()
 
 
 
+void signalHandler(int code)
+{
+    endwin() ;
+    logfile.close() ; 
+    cout<<"\nExit gracefully. \n" ; 
+    exit(0) ; 
+}
+
 
 //MAIN FUNCTION 
 int main(int argc , char * argv[]) 
 {
 
+    signal(SIGINT, signalHandler);
+
+    logfile.open("logfile.log" , ios::out) ; 
     
     HANDLE_EVERYTHING_TILL_EVENT_LOOP() ; 
     int activity ; 
