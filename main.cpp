@@ -193,9 +193,13 @@ class snake
 
         if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
         {
+            //Only accept food if the snake is an offline local snake
+            if(socket_descriptor<0)
+            {
             add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
             setScore(getScore()+1) ; 
             GameObj.printFood("new") ;
+            }
         }
 
         draw_snake() ;
@@ -679,6 +683,8 @@ void Game::handleIOActivity()
                         allSnakes[snake_index].handleMovementKeyPress(msg[c]) ; 
                 }
         }
+
+        logfile<<"\n\nMessage from client : "<<msg <<endl<<endl ; 
     }
 }
 
