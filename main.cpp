@@ -289,7 +289,7 @@ void snake::gameOverHandler()
     GameObj.initConsoleScreen("off") ;
     system("clear") ; 
     string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+" :(\n\n" ; 
-    gameovermessage+="Score : "+std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
+    gameovermessage+="Score : " + std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
     gameovermessage+="\n\nGame will continue in few seconds." ; 
 
     GameObj.printAnimated(gameovermessage) ; 
@@ -303,6 +303,14 @@ void snake::gameOverHandler()
     else GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromID(id)) ; 
 
     GameObj.setNoOfPlayers(GameObj.getNoOfPlayers()-1) ; 
+    
+    if(GameObj.getNoOfPlayers()==0)
+    {
+        GameObj.initConsoleScreen("off") ; 
+        cout<<"\nNo Snakes Left to Play :(  Exiting Game ..." <<endl<<endl; 
+        sleep(3) ;
+        exit(3) ; 
+    }
 
     sleep(4) ;
 }
@@ -310,7 +318,6 @@ void snake::gameOverHandler()
 
 void draw_border_window(int  , int) ; 
 void draw_food(void) ; 
-
 
 void draw_border_window( int max_x , int max_y)
 {
