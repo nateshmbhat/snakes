@@ -108,12 +108,13 @@ class snake
     string snakeDirection  ;
     int socket_descriptor ; 
     int score ;
+    string player_sight ; //what the player sees and plays 
     char keyUp , keyDown , keyRight , keyLeft ; 
     string player_name ; 
     int id ; 
 
     public :
-    snake(char up , char down , char right , char left , int snakeid  , int sd = -1 , string name ="Name")
+    snake(char up , char down , char right , char left , int snakeid  , int sd = -1 , string name ="Name" , string sees="s")
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
         score = 0 ; 
@@ -121,11 +122,14 @@ class snake
         id = snakeid ; 
         socket_descriptor = sd ; 
         player_name = name ; 
+        player_sight = sees ; 
     }
 
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
     void setPlayerName(string name){player_name = name ;}
+    void setPlayerSight(string sight){player_sight = sight; }
+    string getPlayerSight(){return player_sight ; }
     int getSocketDescriptor(){return socket_descriptor ; }
 
 
@@ -194,7 +198,7 @@ class snake
         if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
         {
             //Only accept food if the snake is an offline local snake
-            if(socket_descriptor<0)
+            if(socket_descriptor<0 || player_sight=="s")
             {
             add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
             setScore(getScore()+1) ; 
@@ -279,7 +283,6 @@ void draw_border_window( int max_x , int max_y)
 
 
 
-
 void charecter_code_testing_fun(void)
 {
     //CHARACTER CODE TESTING FUNTION
@@ -291,7 +294,6 @@ void charecter_code_testing_fun(void)
         mvprintw(10 , 10 , "Char = %c  : %d" , prev_char , prev_char) ; 
         usleep(10000) ; 
     }
-
 }
 
 void printSpeed(snake snk)
@@ -613,6 +615,7 @@ void Game::handleNewConnection()
 }
 
 
+
 void Game::handleIOActivity()
 {
     string msg ; 
@@ -637,28 +640,24 @@ void Game::handleIOActivity()
 
         else if(msg.find("init~~")!=string::npos)
         {
-            string name ;
+            string name="" , sight="" ; 
             int pos = msg.find("init~~") ;
+            int i ; 
 
-            for(int i =6 ; msg[i]!='~'  ; i++)
+            for( i =6 ; msg[i]!='~' ; i++)
             {
                 name+=msg[i] ; 
             }
 
-            logfile<<endl<<"\nName of player : " <<name <<endl<<endl; 
+            sight = msg[i+2] ; 
+
+            logfile<<endl<<"\nName of player : " <<name <<"  , sight = " <<sight << endl<<endl; 
             
             allSnakes[snake_index].setPlayerName(name) ;  
-
+            allSnakes[snake_index].setPlayerSight(sight) ;
         }
+
         
-        // cout<<"\n\nMSG is :" <<msg <<"\n\n" ;  
-        // cout.flush() ; 
-        // sleep(2) ; 
-
-
-        //Client has eaten the food . now send new coord
-
-
         //Handle key press
         else{
                 for(int c = 0 ; c<msg.length() ; c++)

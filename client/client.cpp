@@ -529,8 +529,7 @@ int main(int argc , char * argv[])
 
     srand(time(NULL)) ;
     system("clear") ;     
-    string serverAddress ; 
-    string player_name ; 
+    string serverAddress  , player_name , player_sight ;  
     cout<<"Enter your name : " ; 
 
     cin.ignore() ; 
@@ -540,13 +539,23 @@ int main(int argc , char * argv[])
     cout<<"Enter the IP address of the Controlling Server : "  ;
     cin>>serverAddress ; 
 
+    cout<<"\nDo you want your snake to be displayed on your screen ? \n" ; 
+    cout<<"1.Yes (You will see your snake on your screen and the same snake appears on the game controller) : " <<endl<<endl; 
+    cout<<"2.No  (You will be able to control your snake by watching the game controller screen and your keyboard acts as a controller. This is the default choice ) : " <<endl;  
+    cout<<endl<<"Enter choice (1 or 2) : " ; 
+    cin>>player_sight;
+
+    if(player_sight=="1")
+        player_sight = "c" ;
+    else
+        player_sight = "s" ; 
+
+
     //Set some socket options
     GameObj.sock_obj.connectToServer(serverAddress , 8888) ; 
-
     
-    GameObj.sock_obj.sendData("init~~" + player_name+"~~") ; 
+    GameObj.sock_obj.sendData("init~~" + player_name+"~~"+player_sight+"~~") ; 
     // GameObj.sock_obj.readData() ; 
-
    
     GameObj.initConsoleScreen("on") ; 
     //Initialize the snake object
