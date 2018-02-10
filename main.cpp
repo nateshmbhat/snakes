@@ -51,6 +51,7 @@ class Game
     void generateFood() ; 
     int getSnakeIndexFromDescriptor(int) ; 
     void reset_max_screen() ; 
+    void printAnimated(string) ; 
     void draw_all_snakes() ; 
     void KeyPressHandler() ; 
     void printFood(string ) ;
@@ -128,129 +129,162 @@ class snake
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
     void setPlayerName(string name){player_name = name ;}
+    void gameOverHandler() ; 
     void setPlayerSight(string sight){player_sight = sight; }
     string getPlayerSight(){return player_sight ; }
     int getSocketDescriptor(){return socket_descriptor ; }
-
-
-    void draw_snake(void)
-    {
-        int i ; 
-        for(  i =0 ; i<parts.size()-1 ; i++)
-        {
-            mvprintw(parts[i].y  , parts[i].x , "o") ; 
-        }
-        mvprintw(parts[i].y  , parts[i].x , "+") ; 
-    }
-
-    void add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
-    {
-        snake_part obj(x , y) ; 
-        if(direction=="right")
-            parts.push_back(obj) ; 
-
-        else if(direction=="left")
-            parts.insert(parts.begin() ,obj) ; 
-    }
-
-    //called to make the snake appear on the screen for the first time 
-    void init_snake_on_screen()
-    {
-        add_part(GameObj.getCenterX() , GameObj.getCenterY()) ; 
-        add_part(GameObj.getCenterX()+1 , GameObj.getCenterY()) ; 
-        add_part(GameObj.getCenterX()+2 , GameObj.getCenterY()) ; 
-        
-        draw_snake() ;
-    }
-
-    //Used to move the snake in the given direction 
-    void move_snake(string direction)
-    {
-        
-        parts.erase(parts.begin())  ;
-        snake_part last_part = parts.at(parts.size()-1) ;
-
-        if(direction=="right")
-        {
-            add_part((last_part.x+1)%max_x  , last_part.y) ;
-            snakeDirection  = "right" ; 
-        }
-
-        else if(direction =="left") 
-        {
-            add_part((last_part.x-1)<0?max_x-1:(last_part.x-1) , last_part.y) ; 
-            snakeDirection = "left" ; 
-        }
-
-        else if(direction =="up")
-        {
-            add_part(last_part.x , (last_part.y-1)<0?max_y-1:(last_part.y-1)) ;
-            snakeDirection = "up" ; 
-        }
-        else if(direction=="down")
-        {
-            add_part(last_part.x , (last_part.y+1)%max_y) ;
-            snakeDirection = "down" ; 
-        }
-
-        check_snake_overlap() ;
-
-        if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
-        {
-            //Only accept food if the snake is an offline local snake
-            if(socket_descriptor<0 || player_sight=="s")
-            {
-            add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
-            setScore(getScore()+1) ; 
-            GameObj.printFood("new") ;
-            }
-        }
-
-        draw_snake() ;
-        refresh() ; 
-    }
-
-//Checks if the snake bites itself or not ! :D 
-    int check_snake_overlap()
-    {
-    int headX = getHeadX() , headY  = getHeadY() ; 
-    for(int i =0 ; i<parts.size()-1 ; i++)
-        if(parts[i].x==headX && parts[i].y==headY)
-            {
-
-                clear() ;
-                mvprintw(max_y/2 , max_x/2 -20 , "GAME OVER for Player %d !" , id) ;
-                refresh() ; 
-                sleep(50000) ;
-            }
-    }
-
-    void printScore(string pos="left")
-    {
-        if(pos=="right")
-            mvprintw(0 , 15, "Score = %d" , score) ; 
-        mvprintw(0 , 0 , "Score = %d" , score) ; 
-    }
-
-    void handleMovementKeyPress(char ch )
-    {
-  
-        if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
-        else if(keyDown==ch){ if(getDirection()!= "up")move_snake("down") ; } 
-        else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
-        else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
-        else return ; 
-      
-    }
-
-    
+    void draw_snake() ; 
+    void add_part(int , int , string) ; 
+    void init_snake_on_screen() ; 
+    void move_snake(string) ; 
+    int check_snake_overlap() ; 
+    void printScore(string) ; 
+    void handleMovementKeyPress(char) ; 
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
     int getHeadY(void){return parts.at(parts.size()-1).y;}
     string getDirection(void){return snakeDirection; }
+};
 
-}; 
 
+
+void snake::draw_snake(void)
+{
+    int i ; 
+    for(  i =0 ; i<parts.size()-1 ; i++)
+    {
+        mvprintw(parts[i].y  , parts[i].x , "o") ; 
+    }
+    mvprintw(parts[i].y  , parts[i].x , "+") ; 
+}
+
+void snake::add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
+{
+    snake_part obj(x , y) ; 
+    if(direction=="right")
+        parts.push_back(obj) ; 
+
+    else if(direction=="left")
+        parts.insert(parts.begin() ,obj) ; 
+}
+
+//called to make the snake appear on the screen for the first time 
+void snake::init_snake_on_screen()
+{
+    add_part(GameObj.getCenterX() , GameObj.getCenterY()) ; 
+    add_part(GameObj.getCenterX()+1 , GameObj.getCenterY()) ; 
+    add_part(GameObj.getCenterX()+2 , GameObj.getCenterY()) ; 
+    
+    draw_snake() ;
+}
+
+
+
+//Used to move the snake in the given direction 
+void snake::move_snake(string direction)
+{
+    parts.erase(parts.begin())  ;
+    snake_part last_part = parts.at(parts.size()-1) ;
+
+    if(direction=="right")
+    {
+        add_part((last_part.x+1)%max_x  , last_part.y) ;
+        snakeDirection  = "right" ; 
+    }
+
+    else if(direction =="left") 
+    {
+        add_part((last_part.x-1)<0?max_x-1:(last_part.x-1) , last_part.y) ; 
+        snakeDirection = "left" ; 
+    }
+
+    else if(direction =="up")
+    {
+        add_part(last_part.x , (last_part.y-1)<0?max_y-1:(last_part.y-1)) ;
+        snakeDirection = "up" ; 
+    }
+    else if(direction=="down")
+    {
+        add_part(last_part.x , (last_part.y+1)%max_y) ;
+        snakeDirection = "down" ; 
+    }
+
+    check_snake_overlap() ;
+
+    if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
+    {
+        //Only accept food if the snake is an offline local snake
+        if(socket_descriptor<0 || player_sight=="s")
+        {
+        add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
+        setScore(getScore()+1) ; 
+        GameObj.printFood("new") ;
+        }
+    }
+
+    draw_snake() ;
+    refresh() ; 
+}
+
+
+
+//Checks if the snake bites itself or not ! :D 
+int snake::check_snake_overlap()
+{
+    int headX = getHeadX() , headY  = getHeadY() ; 
+    for(int i =0 ; i<parts.size()-1 ; i++)
+    if(parts[i].x==headX && parts[i].y==headY)
+        {
+            gameOverHandler() ; 
+        }
+}
+
+
+void snake::printScore(string pos="left")
+{
+    if(pos=="right")
+        mvprintw(0 , 15, "Score = %d" , score) ; 
+    mvprintw(0 , 0 , "Score = %d" , score) ; 
+}
+
+
+void snake::handleMovementKeyPress(char ch )
+{
+    if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
+    else if(keyDown==ch){ if(getDirection()!= "up")move_snake("down") ; } 
+    else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
+    else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
+    else return ; 
+}
+
+
+void Game::printAnimated(string msg)
+{
+for(int c = 0  ; msg[c] ; c++)
+    {
+        cout<<msg[c] ; 
+        cout.flush() ; 
+        usleep(100000) ; 
+    }
+
+}
+
+
+
+void snake::gameOverHandler()
+{
+    clear() ;
+    GameObj.initConsoleScreen("off") ;
+    system("clear") ; 
+    string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+" :(\n\n" ; 
+    gameovermessage+="Score : "+std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
+    gameovermessage+="\n\nGame will continue in few seconds." ; 
+
+    GameObj.printAnimated(gameovermessage) ; 
+    GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromDescriptor(socket_descriptor)) ; 
+   
+    sleep(4) ;
+}
 
 
 void draw_border_window(int  , int) ; 

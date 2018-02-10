@@ -80,6 +80,7 @@ class Game
     SocketHandler sock_obj; 
     void generateFood() ; 
     void printFood(string ) ;
+    void printAnimated(string) ; 
     void setFoodPos(int , int) ;
     void handleMessageFromServer(string ) ; 
     int getFoodX()
@@ -107,9 +108,6 @@ void Game::setFoodPos(int x , int y)
 
 void Game::handleMessageFromServer(string msg)
 {
-    // cout<<"\n\nServer sent :"<<msg ; 
-    // cout.flush() ; 
-    // sleep(3) ; 
     logfile<<"\nServer sent msg:" <<msg <<"\n" ; 
 
     if(msg.find(":")!=string::npos)
@@ -331,127 +329,158 @@ class snake
         
     }
 
+    int getHeadX(void){return parts.at(parts.size()-1).x;}
+    int getHeadY(void){return parts.at(parts.size()-1).y;}
+    string getDirection(void){return snakeDirection; }
+    void gameOverHandler() ; 
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
     void setPlayerSight(string sight){player_sight = sight ; }
     string getPlayerSight(){return player_sight ; }
+    void draw_snake() ; 
+    void add_part(int , int , string) ; 
+    void init_snake_on_screen() ; 
+    void move_snake(string) ; 
+    int check_snake_overlap() ; 
+    void printScore(string) ; 
+    void handleMovementKeyPress(char) ; 
+};
 
-    void draw_snake(void)
+
+void snake::draw_snake(void)
+{
+    int i ; 
+    for(  i =0 ; i<parts.size()-1 ; i++)
     {
-        int i ; 
-        for(  i =0 ; i<parts.size()-1 ; i++)
-        {
-            mvprintw(parts[i].y  , parts[i].x , "o") ; 
-        }
-        mvprintw(parts[i].y  , parts[i].x , "+") ; 
+        mvprintw(parts[i].y  , parts[i].x , "o") ; 
+    }
+    mvprintw(parts[i].y  , parts[i].x , "+") ; 
+}
+
+void snake::add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
+{
+    snake_part obj(x , y) ; 
+    if(direction=="right")
+        parts.push_back(obj) ; 
+
+    else if(direction=="left")
+        parts.insert(parts.begin() ,obj) ; 
+}
+
+//called to make the snake appear on the screen for the first time 
+void snake::init_snake_on_screen()
+{
+    add_part(GameObj.getCenterX() , GameObj.getCenterY()) ; 
+    add_part(GameObj.getCenterX()+1 , GameObj.getCenterY()) ; 
+    add_part(GameObj.getCenterX()+2 , GameObj.getCenterY()) ; 
+    
+    draw_snake() ;
+}
+
+//Used to move the snake in the given direction 
+void snake::move_snake(string direction)
+{
+    
+    parts.erase(parts.begin())  ;
+    snake_part last_part = parts.at(parts.size()-1) ;
+
+    if(direction=="right")
+    {
+        add_part((last_part.x+1)%max_x  , last_part.y) ;
+        snakeDirection  = "right" ; 
     }
 
-    void add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
+    else if(direction =="left") 
     {
-        snake_part obj(x , y) ; 
-        if(direction=="right")
-            parts.push_back(obj) ; 
-
-        else if(direction=="left")
-            parts.insert(parts.begin() ,obj) ; 
+        add_part((last_part.x-1)<0?max_x-1:(last_part.x-1) , last_part.y) ; 
+        snakeDirection = "left" ; 
     }
 
-    //called to make the snake appear on the screen for the first time 
-    void init_snake_on_screen()
+    else if(direction =="up")
     {
-        add_part(GameObj.getCenterX() , GameObj.getCenterY()) ; 
-        add_part(GameObj.getCenterX()+1 , GameObj.getCenterY()) ; 
-        add_part(GameObj.getCenterX()+2 , GameObj.getCenterY()) ; 
+        add_part(last_part.x , (last_part.y-1)<0?max_y-1:(last_part.y-1)) ;
+        snakeDirection = "up" ; 
+    }
+    else if(direction=="down")
+    {
+        add_part(last_part.x , (last_part.y+1)%max_y) ;
+        snakeDirection = "down" ; 
+    }
+
+    check_snake_overlap() ;
+
+    if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
+    {
+        add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
+        setScore(getScore()+1) ; 
+        GameObj.sock_obj.sendData("#") ; 
         
-        draw_snake() ;
+        //clear that food now  
+        GameObj.setFoodPos(-10 , -10) ; 
+        // GameObjintFood("new") ;
     }
 
-    //Used to move the snake in the given direction 
-    void move_snake(string direction)
+    draw_snake() ;
+    refresh() ; 
+}
+
+void Game::printAnimated(string msg)
+{
+for(int c = 0  ; msg[c] ; c++)
     {
-        
-        parts.erase(parts.begin())  ;
-        snake_part last_part = parts.at(parts.size()-1) ;
-
-        if(direction=="right")
-        {
-            add_part((last_part.x+1)%max_x  , last_part.y) ;
-            snakeDirection  = "right" ; 
-        }
-
-        else if(direction =="left") 
-        {
-            add_part((last_part.x-1)<0?max_x-1:(last_part.x-1) , last_part.y) ; 
-            snakeDirection = "left" ; 
-        }
-
-        else if(direction =="up")
-        {
-            add_part(last_part.x , (last_part.y-1)<0?max_y-1:(last_part.y-1)) ;
-            snakeDirection = "up" ; 
-        }
-        else if(direction=="down")
-        {
-            add_part(last_part.x , (last_part.y+1)%max_y) ;
-            snakeDirection = "down" ; 
-        }
-
-        check_snake_overlap() ;
-
-        if(getHeadX()==GameObj.getFoodX() && getHeadY() == GameObj.getFoodY())
-        {
-            add_part(GameObj.getFoodX() , GameObj.getFoodY() ) ;
-            setScore(getScore()+1) ; 
-            GameObj.sock_obj.sendData("#") ; 
-            
-            //clear that food now  
-            GameObj.setFoodPos(-10 , -10) ; 
-            // GameObjintFood("new") ;
-        }
-
-        draw_snake() ;
-        refresh() ; 
+        cout<<msg[c] ; 
+        cout.flush() ; 
+        usleep(100000) ; 
     }
+
+}
+
+void snake::gameOverHandler()
+{
+
+    clear() ;
+    GameObj.initConsoleScreen("off") ;
+    system("clear") ; 
+    string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+"\n\n" ; 
+    gameovermessage+="Score : "+std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
+    gameovermessage+="\n\nPress ctrl+c to continue ." ; 
+
+    GameObj.printAnimated(gameovermessage) ; 
+
+   
+    sleep(50000) ;
+    
+}
 
 //Checks if the snake bites itself or not ! :D 
-    int check_snake_overlap()
-    {
-    int headX = getHeadX() , headY  = getHeadY() ; 
-    for(int i =0 ; i<parts.size()-1 ; i++)
-        if(parts[i].x==headX && parts[i].y==headY)
-            {
+int snake::check_snake_overlap()
+{
+int headX = getHeadX() , headY  = getHeadY() ; 
+for(int i =0 ; i<parts.size()-1 ; i++)
+    if(parts[i].x==headX && parts[i].y==headY)
+        {
+            gameOverHandler() ; 
+        }
+}
 
-                clear() ;
-                mvprintw(max_y/2 , max_x/2 -20 , "GAME OVER for Player %d !" , id) ;
-                refresh() ; 
-                sleep(50000) ;
-            }
-    }
+void snake::printScore(string pos="left")
+{
+    if(pos=="right")
+        mvprintw(0 , 15, "Score = %d" , score) ; 
+    mvprintw(0 , 0 , "Score = %d" , score) ; 
+}
 
-    void printScore(string pos="left")
-    {
-        if(pos=="right")
-            mvprintw(0 , 15, "Score = %d" , score) ; 
-        mvprintw(0 , 0 , "Score = %d" , score) ; 
-    }
+void snake::handleMovementKeyPress(char ch )
+{
 
-    void handleMovementKeyPress(char ch )
-    {
-  
-        if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
-        else if(keyDown==ch){ if(getDirection()!= "up")move_snake("down") ; } 
-        else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
-        else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
-        else return ; 
-    }
+    if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
+    else if(keyDown==ch){ if(getDirection()!= "up")move_snake("down") ; } 
+    else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
+    else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
+    else return ; 
+}
 
-    
 
-    int getHeadX(void){return parts.at(parts.size()-1).x;}
-    int getHeadY(void){return parts.at(parts.size()-1).y;}
-    string getDirection(void){return snakeDirection; }
-
-}; 
 
 
 
@@ -486,8 +515,6 @@ void draw_border_window( int max_x , int max_y)
 
 
 
-
-
 void charecter_code_testing_fun(void)
 {
     //CHARACTER CODE TESTING FUNTION
@@ -499,8 +526,8 @@ void charecter_code_testing_fun(void)
         mvprintw(10 , 10 , "Char = %c  : %d" , prev_char , prev_char) ; 
         usleep(10000) ; 
     }
-
 }
+
 
 void printSpeed(snake snk)
 {
@@ -518,15 +545,30 @@ void Game::reset_max_screen()
 
 void signalHandler(int code)
 {
-    cout<<"\nGracefull exit ! " ; 
     endwin() ; 
     logfile.close() ; 
-    exit(0) ; 
+    stringstream out ; 
+    out<<"1.Restart Game" <<endl; 
+    out<<"2.Credits" <<endl; 
+    out<<"3.Exit" <<endl; 
+    out<<"\nEnter choice : " <<endl; 
+    cout<<out.str() ; 
+    int ch ; 
+    cin>>ch ; 
+
+    if(ch==1)
+        main() ; 
+    else if(ch==2)
+        ;
+        //TODO : show credits ;
+    else if(ch==3)
+        exit(1) ; 
+
 }
 
 
 
-int main(int argc , char * argv[]) 
+int main() 
 {
     signal(SIGINT , signalHandler) ; 
     logfile.open ("logfileclient.log" , ios::out); 
@@ -568,6 +610,7 @@ int main(int argc , char * argv[])
     first_snake.init_snake_on_screen() ; 
 
     char ch ; 
+
     for(;;)
     {
         GameObj.reset_max_screen() ; 

@@ -66,8 +66,6 @@
 
     void socketHandler::startServer()
     {
-        printf("Listener on port %d \n",PORT );  
-            
         //try to specify maximum of 3 pending connections for the master socket 
         if (listen(master_socket, 3) < 0)  
         {  
@@ -108,9 +106,7 @@
         //so wait indefinitely 
         setupClientDescriptors() ; 
 
-        puts("\nBefore select : \n") ; 
         activity = select( max_sd + 1 , &readfds , NULL , NULL , &timeout);  
-        printf("\nSelect returned : %d \n" , activity) ; 
       
         if ((activity < 0) && (errno!=EINTR))  
         {  
@@ -131,7 +127,6 @@
     //returns the sd of new client 
     int socketHandler:: handleNewConnection()
     {
-        puts("\nInside FD_ISSET master_socket") ; 
             if ((new_socket = accept(master_socket, 
                     (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)  
             {  
@@ -140,8 +135,8 @@
             }  
             
             //inform user of socket number - used in send and receive commands 
-            printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs
-                  (address.sin_port));  
+            // printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs
+                //   (address.sin_port));  
           
             //send new connection greeting message 
             // if( send(new_socket, message, strlen(message),  MSG_NOSIGNAL) != strlen(message) )  
@@ -172,7 +167,6 @@
     {
         //Check if it was for closing , and also read the 
         //incoming message 
-        // printf("\nFD_ISSET inside the IO operation handler : client_sd : %d\n" , client_sd)  ;
         if ((valread = read( client_sd , buffer, 1024)) <= 0)  
         {  
             //Somebody disconnected , get his details and print 
