@@ -50,13 +50,14 @@ class Game
     
     void generateFood() ; 
     int getSnakeIndexFromDescriptor(int) ; 
+    int getSnakeIndexFromID(int) ; 
     void reset_max_screen() ; 
-    void printAnimated(string) ; 
+    void printAnimated(string ,  int =70000) ; 
     void draw_all_snakes() ; 
     void KeyPressHandler() ; 
     void printFood(string ) ;
     void MainEventLoop() ; 
-    void ask_no_players(string) ; 
+    void ask_no_players(string) ;
     void moveAllSnakes() ; 
     void LAN_sendFoodCoordinates(int , int ) ; 
     void setFoodPos(int , int) ;
@@ -127,6 +128,7 @@ class snake
     }
 
     int getScore(void){return score ; }
+    int getID(){return id ; }
     int setScore(int s){score = s ; return score ; }
     void setPlayerName(string name){player_name = name ;}
     void gameOverHandler() ; 
@@ -258,17 +260,25 @@ void snake::handleMovementKeyPress(char ch )
 }
 
 
-void Game::printAnimated(string msg)
+void Game::printAnimated(string msg , int speed)
 {
 for(int c = 0  ; msg[c] ; c++)
     {
         cout<<msg[c] ; 
         cout.flush() ; 
-        usleep(100000) ; 
+        usleep(speed) ; 
     }
-
 }
 
+
+int Game::getSnakeIndexFromID(int id)
+{
+    for(int i =0 ; i<allSnakes.size() ; i++)
+    {
+        if(allSnakes[i].getID()==id)
+            return i ; 
+    }
+}
 
 
 void snake::gameOverHandler()
@@ -281,8 +291,16 @@ void snake::gameOverHandler()
     gameovermessage+="\n\nGame will continue in few seconds." ; 
 
     GameObj.printAnimated(gameovermessage) ; 
-    GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromDescriptor(socket_descriptor)) ; 
-   
+    
+    if(socket_descriptor>0)
+    {
+        GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromDescriptor(socket_descriptor)) ;
+    }
+
+    else GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromID(id)) ; 
+
+    GameObj.setNoOfPlayers(GameObj.getNoOfPlayers()-1) ; 
+
     sleep(4) ;
 }
 
@@ -410,7 +428,7 @@ void Game::ask_no_players(string player="single")
         cout<<"Player "<<i<<" = Enter the key for Left Right Up Down  : " ;
         cin>>left >>right >>up >>down ; 
 
-        snake * snk = new snake(up , down , right , left , i) ; 
+        snake * snk = new snake(up , down , right , left , -i) ; 
         GameObj.allSnakes.push_back(*snk) ; 
     }
 
@@ -436,7 +454,9 @@ void Game::KeyPressHandler()
         if (GameObj.getGameMode()=="multi"){
             for(int i =1 ; i<allSnakes.size() ; i++)
             {
-                allSnakes[i].handleMovementKeyPress(ch) ; 
+                //only move if the key press occurs for offline snakes
+                if(allSnakes[i].getSocketDescriptor()<0)
+                    allSnakes[i].handleMovementKeyPress(ch) ; 
             }
         }
 

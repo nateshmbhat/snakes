@@ -1,39 +1,12 @@
 
 Sending data to server : 
-init~~kdsf~~c~~
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
+init~~daf~~c~~
 
 Sending data to server : 
 B
 
 Sending data to server : 
 C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
 
 Sending data to server : 
 C
@@ -42,7 +15,40 @@ Sending data to server :
 A
 
 Sending data to server : 
+A
+
+Sending data to server : 
 D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
 
 Sending data to server : 
 B
@@ -51,49 +57,7 @@ Sending data to server :
 C
 
 Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
 C
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-C
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-C
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
 
 Sending data to server : 
 C
@@ -104,77 +68,16 @@ A
 Sending data to server : 
 #
 
-Server sent msg::065,006
-
-Sending data to server : 
-D
+Server sent msg::075,012
 
 Sending data to server : 
 A
 
 Sending data to server : 
-D
+A
 
 Sending data to server : 
-B
-
-Sending data to server : 
-#
-
-Server sent msg::035,028
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-#
-
-Server sent msg::075,035
+A
 
 Sending data to server : 
 A
@@ -184,51 +87,6 @@ A
 
 Sending data to server : 
 C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
 
 Sending data to server : 
 C
@@ -239,109 +97,16 @@ C
 Sending data to server : 
 #
 
-Sending data to server : 
-C
-
-Server sent msg::004,017
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
+Server sent msg::081,032
 
 Sending data to server : 
 B
 
 Sending data to server : 
-D
+B
 
 Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
+B
 
 Sending data to server : 
 B
@@ -349,13 +114,179 @@ B
 Sending data to server : 
 #
 
-Server sent msg::066,016
+Server sent msg::060,027
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+#
+
+Server sent msg::047,022
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+B
 
 Sending data to server : 
 C
 
 Sending data to server : 
+A
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
 C
+
+Sending data to server : 
+B
+
+Sending data to server : 
+C
+
+Sending data to server : 
+A
+
+Sending data to server : 
+D
+
+Sending data to server : 
+#
+
+Server sent msg::027,036
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+B
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+C
+
+Sending data to server : 
+#
+
+Server sent msg::021,041
+
+Sending data to server : 
+B
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+#
+
+Server sent msg::002,002
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+#
+
+Server sent msg::078,012
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
+
+Sending data to server : 
+A
 
 Sending data to server : 
 A
@@ -380,6 +311,33 @@ C
 
 Sending data to server : 
 C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+B
 
 Sending data to server : 
 C
@@ -432,7 +390,7 @@ C
 Sending data to server : 
 #
 
-Server sent msg::047,017
+Server sent msg::067,005
 
 Sending data to server : 
 B
@@ -445,182 +403,6 @@ A
 
 Sending data to server : 
 D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
-
-Sending data to server : 
-C
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-#
-
-Server sent msg::068,035
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-C
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
-
-Sending data to server : 
-C
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
 
 Sending data to server : 
 B
@@ -628,7 +410,45 @@ B
 Sending data to server : 
 #
 
-Server sent msg::029,042
+Server sent msg::069,018
+
+Sending data to server : 
+C
+
+Sending data to server : 
+B
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+C
+
+Sending data to server : 
+B
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+#
+
+Server sent msg::023,007
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
 
 Sending data to server : 
 D
@@ -672,16 +492,155 @@ D
 Sending data to server : 
 #
 
-Server sent msg::026,040
+Server sent msg::077,014
 
 Sending data to server : 
-A
-
-Sending data to server : 
-A
+B
 
 Sending data to server : 
 C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+C
+
+Sending data to server : 
+#
+
+Sending data to server : 
+B
+
+Server sent msg::031,020
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+D
+
+Sending data to server : 
+B
+
+Sending data to server : 
+C
+
+Sending data to server : 
+A
+
+Sending data to server : 
+D
+
+Sending data to server : 
+A
+
+Sending data to server : 
+#
+
+Server sent msg::010,037
+
+Sending data to server : 
+D
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
+
+Sending data to server : 
+B
 
 Sending data to server : 
 B
@@ -692,7 +651,7 @@ D
 Sending data to server : 
 #
 
-Server sent msg::038,021
+Server sent msg::054,008
 
 Sending data to server : 
 A
@@ -708,79 +667,6 @@ A
 
 Sending data to server : 
 A
-
-Sending data to server : 
-A
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-C
-
-Sending data to server : 
-#
-
-Server sent msg::025,019
-
-Sending data to server : 
-C
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-#
-
-Server sent msg::002,011
-
-Sending data to server : 
-D
 
 Sending data to server : 
 A
@@ -808,23 +694,6 @@ D
 
 Sending data to server : 
 D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-B
-
-Sending data to server : 
-#
-
-Server sent msg::041,012
-
-Sending data to server : 
-C
-
-Sending data to server : 
-A
 
 Sending data to server : 
 D
@@ -841,22 +710,7 @@ D
 Sending data to server : 
 #
 
-Server sent msg::024,011
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-D
-
-Sending data to server : 
-A
-
-Sending data to server : 
-D
+Server sent msg::050,002
 
 Sending data to server : 
 B
@@ -865,27 +719,4 @@ Sending data to server :
 C
 
 Sending data to server : 
-#
-
-Server sent msg::068,026
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-B
-
-Sending data to server : 
-D
-
-Sending data to server : 
 A
-
-Sending data to server : 
-C

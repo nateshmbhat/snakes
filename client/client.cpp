@@ -546,23 +546,24 @@ void Game::reset_max_screen()
 void signalHandler(int code)
 {
     endwin() ; 
-    logfile.close() ; 
+    cout.flush() ;
     stringstream out ; 
-    out<<"1.Restart Game" <<endl; 
-    out<<"2.Credits" <<endl; 
-    out<<"3.Exit" <<endl; 
+    out<<"1.Credits" <<endl; 
+    out<<"2.Exit" <<endl; 
     out<<"\nEnter choice : " <<endl; 
     cout<<out.str() ; 
     int ch ; 
     cin>>ch ; 
 
-    if(ch==1)
-        main() ; 
-    else if(ch==2)
-        ;
-        //TODO : show credits ;
-    else if(ch==3)
-        exit(1) ; 
+    switch(ch)
+    {
+        case 1:
+            ;
+            break ; 
+        case 2:
+            logfile.close() ; 
+            exit(1) ; 
+    }
 
 }
 

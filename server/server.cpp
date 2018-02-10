@@ -117,8 +117,12 @@
     }
 
 
+    void socketHandler::closeSocket(int sd)
+    {
+        close(sd) ; 
+    }
 
-    void socketHandler::closeSocket()
+    void socketHandler::stopServer()
     {
         close(master_socket) ; 
     }
