@@ -40,11 +40,11 @@
     void socketHandler::setupClientDescriptors()
     {
         //clear the socket set 
-        FD_ZERO(&readfds);  
+        FD_ZERO(&readfds); 
     
         //add master socket to set 
         FD_SET(master_socket, &readfds);  
-        max_sd = master_socket;  
+        max_sd = master_socket; 
             
         //add child sockets to set 
         for ( i = 0 ; i < max_clients ; i++)  
@@ -54,7 +54,7 @@
                 
             //if valid socket descriptor then add to read list 
             if(sd > 0)  
-                FD_SET( sd , &readfds);  
+                FD_SET( sd , &readfds); 
                 
             //highest file descriptor number, need it for the select function 
             if(sd > max_sd)  
@@ -120,7 +120,7 @@
     void socketHandler::closeSocket(int sd)
     {
         close(sd) ; 
-        for(int i=0 ; i<30 ; i++)
+        for(int i=0 ; i<max_clients ; i++)
         {
             if(client_socket[i]==sd)
             {
@@ -186,7 +186,12 @@
                                 
             //Close the socket and mark as 0 in list for reuse 
             close( client_sd );  
-            client_socket[i] = 0;  
+            for(int i =0 ; i<max_clients ; i++)
+            {
+                if(client_socket[i]==client_sd)
+                    client_socket[i] = 0;  
+            }
+
             return "" ; 
         }  
             
