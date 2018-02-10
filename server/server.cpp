@@ -120,6 +120,13 @@
     void socketHandler::closeSocket(int sd)
     {
         close(sd) ; 
+        for(int i=0 ; i<30 ; i++)
+        {
+            if(client_socket[i]==sd)
+            {
+                client_socket[i] = 0 ; 
+            }
+        }
     }
 
     void socketHandler::stopServer()

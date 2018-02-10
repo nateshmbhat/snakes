@@ -194,7 +194,6 @@ void Game::printFood(string status="old")
 
 
 
-    //initialise all client_socket[] to 0 so not checked 
     SocketHandler::SocketHandler(void)
     {
         sock = 0  ;  
@@ -446,7 +445,7 @@ void snake::gameOverHandler()
     gameovermessage+="\n\nPress ctrl+c to continue ." ; 
 
     GameObj.printAnimated(gameovermessage) ; 
-
+    GameObj.sock_obj.closeSocket() ; 
    
     sleep(50000) ;
     
@@ -561,10 +560,12 @@ void signalHandler(int code)
             ;
             break ; 
         case 2:
+            GameObj.sock_obj.closeSocket() ; 
             logfile.close() ; 
             exit(1) ; 
     }
 
+    exit(2) ; 
 }
 
 

@@ -685,6 +685,7 @@ void Game::handleIOActivity()
         {
             cout<<"\nclient disconnected : " ;  
             cout<<"\nremoving client with sd = " << clients[i] ;
+            GameObj.server.closeSocket(clients[i]) ; 
             allSnakes.erase(allSnakes.begin()+snake_index) ; 
             setNoOfPlayers(getNoOfPlayers()-1) ; 
         }
