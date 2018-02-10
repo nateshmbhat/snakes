@@ -6,6 +6,7 @@
 #include<cstdlib>
 #include "./server/server.h"
 #include<fstream>
+#include<regex>
 
 using namespace std ; 
 
@@ -108,21 +109,23 @@ class snake
     int socket_descriptor ; 
     int score ;
     char keyUp , keyDown , keyRight , keyLeft ; 
+    string player_name ; 
     int id ; 
 
     public :
-    snake(char up , char down , char right , char left , int snakeid  , int sd = -1)
+    snake(char up , char down , char right , char left , int snakeid  , int sd = -1 , string name ="Name")
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
         score = 0 ; 
         snakeDirection = "right" ; 
         id = snakeid ; 
         socket_descriptor = sd ; 
-         
+        player_name = name ; 
     }
 
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
+    void setPlayerName(string name){player_name = name ;}
     int getSocketDescriptor(){return socket_descriptor ; }
 
 
@@ -531,10 +534,11 @@ void Game::LAN_sendFoodCoordinates(int x , int y)
 void Game::generateFood()
 {
     int x = random()%max_x , y = random()%max_y  ; 
-    logfile<<"\n\nGenerating food at pos:"<<x <<","<<y<<"\n\n" ; 
 
-    if(!x)x = 2 ; 
-    if(!y) y = 2 ; 
+    if(x<2)x = 2 ; 
+    if(y<2) y = 2 ; 
+
+    logfile<<"\n\nGenerating food at pos:"<<x <<","<<y<<"\n\n" ; 
     mvprintw(y, x ,"#") ;   
     setFoodPos(x , y) ;
 
@@ -564,12 +568,18 @@ void HANDLE_EVERYTHING_TILL_EVENT_LOOP()
     srand(time(NULL)) ;
     GameObj.initConsoleScreen("on") ; 
 
-    //Add the first snake object
-    snake first_snake  = snake('A' , 'B' , 'C' , 'D' , 0) ; 
-    GameObj.allSnakes.push_back(first_snake) ;
 
     //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
     GameObj.ask_no_players() ; 
+
+    //Add the first snake object
+    if(GameObj.getNoOfPlayers())
+    {
+        snake first_snake  = snake('A' , 'B' , 'C' , 'D' , 0 ) ; 
+        first_snake.setPlayerName("Player 0" ) ; 
+        GameObj.allSnakes.push_back(first_snake) ;
+    }
+
     GameObj.draw_all_snakes() ; 
  
 }
@@ -618,6 +628,21 @@ void Game::handleIOActivity()
             cout<<"\nremoving client with sd = " << clients[i] ;
             allSnakes.erase(allSnakes.begin()+snake_index) ; 
             setNoOfPlayers(getNoOfPlayers()-1) ; 
+        }
+
+
+        else if(msg.find("init~~")!=string::npos)
+        {
+            string name ;
+            int pos = msg.find("init~~") ;
+
+            for(int i =6 ; msg[i]!='~'  ; i++)
+            {
+                name+=msg[i] ; 
+            }
+            
+            allSnakes[snake_index].setPlayerName(name) ;  
+
         }
         
         // cout<<"\n\nMSG is :" <<msg <<"\n\n" ;  

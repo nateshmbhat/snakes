@@ -315,16 +315,19 @@ class snake
     vector <snake_part> parts ;
     string snakeDirection  ;
     int score ;
+    string player_name ; 
     char keyUp , keyDown , keyRight , keyLeft ; 
     int id ; 
 
     public :
-    snake(char up , char down , char right , char left , int id )
+    snake(char up , char down , char right , char left , int snakeid ,string name="Name" )
     {
         keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
         score = 0 ; 
         snakeDirection = "right" ; 
-        id = id ; 
+        id = snakeid ; 
+        player_name = name ; 
+        
     }
 
     int getScore(void){return score ; }
@@ -437,7 +440,6 @@ class snake
         else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
         else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
         else return ; 
-      
     }
 
     
@@ -511,10 +513,18 @@ void Game::reset_max_screen()
 
 
 
+void signalHandler(int code)
+{
+    cout<<"\nGracefull exit ! " ; 
+    endwin() ; 
+    logfile.close() ; 
+    exit(0) ; 
+}
 
 
 int main(int argc , char * argv[]) 
 {
+    signal(SIGINT , signalHandler) ; 
     logfile.open ("logfileclient.log" , ios::out);
 
     srand(time(NULL)) ;
@@ -534,13 +544,13 @@ int main(int argc , char * argv[])
     GameObj.sock_obj.connectToServer(serverAddress , 8888) ; 
 
     
-    GameObj.sock_obj.sendData("init " + player_name) ; 
+    GameObj.sock_obj.sendData("init~~" + player_name+"~~") ; 
     // GameObj.sock_obj.readData() ; 
 
    
     GameObj.initConsoleScreen("on") ; 
     //Initialize the snake object
-    snake first_snake('A' , 'B' , 'C' , 'D' , 0) ;
+    snake first_snake('A' , 'B' , 'C' , 'D' , 0 , player_name) ;
     first_snake.init_snake_on_screen() ; 
 
 
