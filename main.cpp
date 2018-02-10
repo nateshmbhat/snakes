@@ -527,21 +527,18 @@ food Game::getFoodPos()
 //sends the coordinates of food to all the clients  :15,20
 void Game::LAN_sendFoodCoordinates(int x , int y)
 {
-        // cout<<"\nLAN coordiantes to send to client are :"<<x <<","<<y <<endl ; 
-        // cout.flush() ; 
-        // sleep(2) ; 
-        for(int temp= 0 ; temp<allSnakes.size() ; temp++)
+    for(int temp= 0 ; temp<allSnakes.size() ; temp++)
+    {
+        int sd  = allSnakes[temp].getSocketDescriptor() ; 
+
+        if(sd>0)
         {
-            int sd  = allSnakes[temp].getSocketDescriptor() ; 
+            char foodcoord[20] ; 
+            sprintf(foodcoord , ":%03d,%03d" ,x , y) ; 
 
-            if(sd>0)
-            {
-                char foodcoord[20] ; 
-                sprintf(foodcoord , ":%03d,%03d" ,x , y) ; 
-
-                server.sendData(sd , string(foodcoord)) ; 
-            }
+            server.sendData(sd , string(foodcoord)) ; 
         }
+    }
 
 }
 
@@ -579,7 +576,6 @@ void Game::printFood(string status="old")
 //HANDLES EVERYTHING UNTILL THE MAIN EVENT LOOP STARTS IN THE main function . 
 void HANDLE_EVERYTHING_TILL_EVENT_LOOP()
 {
-
     srand(time(NULL)) ;
     GameObj.initConsoleScreen("on") ; 
 
@@ -587,7 +583,6 @@ void HANDLE_EVERYTHING_TILL_EVENT_LOOP()
     GameObj.ask_no_players() ; 
 
     GameObj.draw_all_snakes() ; 
- 
 }
 
 

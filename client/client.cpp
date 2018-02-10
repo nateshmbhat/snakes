@@ -316,6 +316,7 @@ class snake
     string snakeDirection  ;
     int score ;
     string player_name ; 
+    string player_sight ; 
     char keyUp , keyDown , keyRight , keyLeft ; 
     int id ; 
 
@@ -332,6 +333,8 @@ class snake
 
     int getScore(void){return score ; }
     int setScore(int s){score = s ; return score ; }
+    void setPlayerSight(string sight){player_sight = sight ; }
+    string getPlayerSight(){return player_sight ; }
 
     void draw_snake(void)
     {
@@ -522,11 +525,11 @@ void signalHandler(int code)
 }
 
 
+
 int main(int argc , char * argv[]) 
 {
     signal(SIGINT , signalHandler) ; 
-    logfile.open ("logfileclient.log" , ios::out);
-
+    logfile.open ("logfileclient.log" , ios::out); 
     srand(time(NULL)) ;
     system("clear") ;     
     string serverAddress  , player_name , player_sight ;  
@@ -560,8 +563,9 @@ int main(int argc , char * argv[])
     GameObj.initConsoleScreen("on") ; 
     //Initialize the snake object
     snake first_snake('A' , 'B' , 'C' , 'D' , 0 , player_name) ;
+    first_snake.setPlayerSight(player_sight); 
+    
     first_snake.init_snake_on_screen() ; 
-
 
     char ch ; 
     for(;;)
@@ -576,17 +580,21 @@ int main(int argc , char * argv[])
                 ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
                 string ch_string(1,ch) ; 
                 GameObj.sock_obj.sendData(ch_string) ; 
-                first_snake.handleMovementKeyPress(ch) ; 
+                if(first_snake.getPlayerSight()=="c")
+                    first_snake.handleMovementKeyPress(ch) ; 
             }
         }
 
         flushinp();
         clear() ;
 
-        first_snake.move_snake(first_snake.getDirection()) ;
+        if(first_snake.getPlayerSight()=="c")
+        {
+            first_snake.move_snake(first_snake.getDirection()) ;
 
-        printSpeed(first_snake) ; 
-        GameObj.printFood() ;
+            printSpeed(first_snake) ; 
+            GameObj.printFood() ;
+        }
         refresh() ;
 
 
