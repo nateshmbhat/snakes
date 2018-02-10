@@ -239,6 +239,8 @@ int snake::check_snake_overlap()
     for(int i =0 ; i<parts.size()-1 ; i++)
     if(parts[i].x==headX && parts[i].y==headY)
         {
+            if(player_sight=="s")
+                GameObj.server.sendData(socket_descriptor , "$"+std::to_string(score)+"$") ; 
             gameOverHandler() ; 
         }
 }

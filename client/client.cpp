@@ -40,6 +40,62 @@ typedef struct food
 }food ; 
 
 
+
+
+class snake_part
+{
+    public :
+    int x , y ; 
+
+    snake_part(int  xx, int yy )
+    {
+        x = xx ; y = yy ; 
+    }
+};
+
+
+
+class snake
+{
+    private :
+    friend Game ; 
+    vector <snake_part> parts ;
+    string snakeDirection  ;
+    int score ;
+    string player_name ; 
+    string player_sight ; 
+    char keyUp , keyDown , keyRight , keyLeft ; 
+    int id ; 
+
+    public :
+    snake(char up , char down , char right , char left , int snakeid ,string name="Name" )
+    {
+        keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
+        score = 0 ; 
+        snakeDirection = "right" ; 
+        id = snakeid ; 
+        player_name = name ; 
+        
+    }
+
+    int getHeadX(void){return parts.at(parts.size()-1).x;}
+    int getHeadY(void){return parts.at(parts.size()-1).y;}
+    string getDirection(void){return snakeDirection; }
+    void gameOverHandler() ; 
+    int getScore(void){return score ; }
+    int setScore(int s){score = s ; return score ; }
+    void setPlayerSight(string sight){player_sight = sight ; }
+    string getPlayerSight(){return player_sight ; }
+    void draw_snake() ; 
+    void add_part(int , int , string) ; 
+    void init_snake_on_screen() ; 
+    void move_snake(string) ; 
+    int check_snake_overlap() ; 
+    void printScore(string) ; 
+    void handleMovementKeyPress(char) ; 
+};
+
+
 class SocketHandler{
 
     struct sockaddr_in address;
@@ -67,6 +123,7 @@ class Game
     food foodObj ;
     int center_x , center_y; 
     unsigned long int speed ; 
+    snake * mainSnakePtr ;  
 
     public:
 
@@ -79,6 +136,7 @@ class Game
     
     SocketHandler sock_obj; 
     void generateFood() ; 
+    void setMainSnakePtr(snake * ptr)  { mainSnakePtr = ptr ; }
     void printFood(string ) ;
     void printAnimated(string , int = 60000) ; 
     void setFoodPos(int , int) ;
@@ -129,13 +187,28 @@ void Game::handleMessageFromServer(string msg)
 
     }
 
+    //Handle game over message sent from server
+    if(msg.find("$")!=string::npos)
+    {
+        int start = msg.find("$") ;
+        string num="" ; 
+        for(int i = start ; msg[i]!='$' ; i++)
+        {
+            num+=msg[i] ; 
+        }
+        mainSnakePtr->setScore(stoi(num)) ;
+
+    }
+
     else{
         for(int i =0 ; i<msg.length()  ; i++)
         {
             if(msg[i]=='-')
                 GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
+
             else if(msg[i]=='+')
-                GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
+                GameObj.setSpeed(GameObj.getSpeed()-3000) ;
+
         }
     }
 }
@@ -292,58 +365,6 @@ void Game::printFood(string status="old")
 
 
 
-
-class snake_part
-{
-    public :
-    int x , y ; 
-
-    snake_part(int  xx, int yy )
-    {
-        x = xx ; y = yy ; 
-    }
-};
-
-
-
-class snake
-{
-    private :
-    vector <snake_part> parts ;
-    string snakeDirection  ;
-    int score ;
-    string player_name ; 
-    string player_sight ; 
-    char keyUp , keyDown , keyRight , keyLeft ; 
-    int id ; 
-
-    public :
-    snake(char up , char down , char right , char left , int snakeid ,string name="Name" )
-    {
-        keyUp = up , keyDown = down , keyRight = right , keyLeft = left ; 
-        score = 0 ; 
-        snakeDirection = "right" ; 
-        id = snakeid ; 
-        player_name = name ; 
-        
-    }
-
-    int getHeadX(void){return parts.at(parts.size()-1).x;}
-    int getHeadY(void){return parts.at(parts.size()-1).y;}
-    string getDirection(void){return snakeDirection; }
-    void gameOverHandler() ; 
-    int getScore(void){return score ; }
-    int setScore(int s){score = s ; return score ; }
-    void setPlayerSight(string sight){player_sight = sight ; }
-    string getPlayerSight(){return player_sight ; }
-    void draw_snake() ; 
-    void add_part(int , int , string) ; 
-    void init_snake_on_screen() ; 
-    void move_snake(string) ; 
-    int check_snake_overlap() ; 
-    void printScore(string) ; 
-    void handleMovementKeyPress(char) ; 
-};
 
 
 void snake::draw_snake(void)
@@ -608,6 +629,7 @@ int main()
     //Initialize the snake object
     snake first_snake('A' , 'B' , 'C' , 'D' , 0 , player_name) ;
     first_snake.setPlayerSight(player_sight); 
+    GameObj.setMainSnakePtr(&first_snake) ; 
     
     first_snake.init_snake_on_screen() ; 
 
