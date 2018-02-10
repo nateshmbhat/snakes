@@ -80,7 +80,7 @@ class Game
     SocketHandler sock_obj; 
     void generateFood() ; 
     void printFood(string ) ;
-    void printAnimated(string) ; 
+    void printAnimated(string , int = 60000) ; 
     void setFoodPos(int , int) ;
     void handleMessageFromServer(string ) ; 
     int getFoodX()
@@ -424,13 +424,13 @@ void snake::move_snake(string direction)
     refresh() ; 
 }
 
-void Game::printAnimated(string msg)
+void Game::printAnimated(string msg  , int speed)
 {
 for(int c = 0  ; msg[c] ; c++)
     {
         cout<<msg[c] ; 
         cout.flush() ; 
-        usleep(100000) ; 
+        usleep(speed) ; 
     }
 
 }

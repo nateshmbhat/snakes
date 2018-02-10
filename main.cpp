@@ -29,6 +29,7 @@ typedef struct food
 
 class Game 
 {
+    friend snake ; 
     private:
     int noOfPlayers ;
     string gamemode ; 
@@ -52,7 +53,7 @@ class Game
     int getSnakeIndexFromDescriptor(int) ; 
     int getSnakeIndexFromID(int) ; 
     void reset_max_screen() ; 
-    void printAnimated(string ,  int =70000) ; 
+    void printAnimated(string ,  int =40000) ; 
     void draw_all_snakes() ; 
     void KeyPressHandler() ; 
     void printFood(string ) ;
@@ -105,6 +106,7 @@ class snake_part
 
 class snake 
 {
+    friend Game ; 
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
@@ -295,6 +297,7 @@ void snake::gameOverHandler()
     if(socket_descriptor>0)
     {
         GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromDescriptor(socket_descriptor)) ;
+        GameObj.server.closeSocket(socket_descriptor) ; 
     }
 
     else GameObj.allSnakes.erase(GameObj.allSnakes.begin()+GameObj.getSnakeIndexFromID(id)) ; 
@@ -717,6 +720,8 @@ void Game::handleIOActivity()
                         
                         //Client has eaten a food . Increase its part 
                         allSnakes[snake_index].add_part(allSnakes[snake_index].getHeadX() , allSnakes[snake_index].getHeadY()) ; 
+
+                        allSnakes[snake_index].score++ ; 
                         
                         printFood("new") ; 
 
