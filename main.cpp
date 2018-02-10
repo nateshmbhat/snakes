@@ -355,6 +355,14 @@ void Game::ask_no_players(string player="single")
         }
 
 
+    //Add the first snake object
+    if(GameObj.getNoOfPlayers())
+    {
+        snake first_snake  = snake('A' , 'B' , 'C' , 'D' , 0 ) ; 
+        first_snake.setPlayerName("Player 0" ) ; 
+        GameObj.allSnakes.push_back(first_snake) ;
+    }
+
      for(int i =1 ; i<GameObj.getNoOfPlayers() ; i++)
     {
 
@@ -381,10 +389,11 @@ void Game::KeyPressHandler()
         {
             getch() ; // clear and reject 91 from buffer
             ch = getch() ;//Now store the actual value of arrow key pressed               getch() ; 
-            allSnakes[0].handleMovementKeyPress(ch) ;
+            if(GameObj.getNoOfPlayers())
+                allSnakes[0].handleMovementKeyPress(ch) ;
         }
 
-        else if (GameObj.getGameMode()=="multi"){
+        if (GameObj.getGameMode()=="multi"){
             for(int i =1 ; i<allSnakes.size() ; i++)
             {
                 allSnakes[i].handleMovementKeyPress(ch) ; 
@@ -568,17 +577,8 @@ void HANDLE_EVERYTHING_TILL_EVENT_LOOP()
     srand(time(NULL)) ;
     GameObj.initConsoleScreen("on") ; 
 
-
     //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
     GameObj.ask_no_players() ; 
-
-    //Add the first snake object
-    if(GameObj.getNoOfPlayers())
-    {
-        snake first_snake  = snake('A' , 'B' , 'C' , 'D' , 0 ) ; 
-        first_snake.setPlayerName("Player 0" ) ; 
-        GameObj.allSnakes.push_back(first_snake) ;
-    }
 
     GameObj.draw_all_snakes() ; 
  
@@ -640,6 +640,8 @@ void Game::handleIOActivity()
             {
                 name+=msg[i] ; 
             }
+
+            logfile<<endl<<"\nName of player : " <<name <<endl<<endl; 
             
             allSnakes[snake_index].setPlayerName(name) ;  
 
@@ -771,7 +773,10 @@ int main(int argc , char * argv[])
         GameObj.moveAllSnakes() ; 
 
         // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
-        printSpeed(GameObj.allSnakes[0]) ; 
+
+        if(GameObj.getNoOfPlayers())
+            printSpeed(GameObj.allSnakes[0]) ; 
+
         GameObj.printFood() ;
         refresh() ;
         usleep(GameObj.getSpeed()) ;
