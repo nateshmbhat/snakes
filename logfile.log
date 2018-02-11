@@ -1,82 +1,30 @@
 
 
+body color : 5
+
+
+
 body color : 3
 
 
 
-body color : 1
+body color : 4
 
 
 
-body color : 1
+body color : 5
 
 
 
-Generating food at pos:20,30
+Generating food at pos:54,28
 
 
 
-Generating food at pos:69,17
+body color : 4
 
 
 
-Generating food at pos:37,12
-
-
-
-Generating food at pos:41,3
-
-
-
-Generating food at pos:48,2
-
-
-
-Generating food at pos:27,7
-
-
-
-Generating food at pos:61,33
-
-
-
-Generating food at pos:65,13
-
-
-
-Generating food at pos:29,24
-
-
-
-Generating food at pos:7,6
-
-
-
-Generating food at pos:10,21
-
-
-
-Generating food at pos:34,37
-
-
-
-Generating food at pos:80,3
-
-
-
-Generating food at pos:36,22
-
-
-
-Generating food at pos:2,14
-
-
-
-body color : 2
-
-
-
-Generating food at pos:60,36
+Generating food at pos:60,15
 
 
 
@@ -95,141 +43,11 @@ Message from client : A
 Message from client : D
 
 
-
-Message from client : B
-
-
-
-Message from client : 
-
-
-
-body color : 4
-
-
-
-Generating food at pos:2,19
-
-
-
-Name of player : lkasdf  , sight = c
-
-
-
-Message from client : init~~lkasdf~~c~~
-
-
-
-Message from client : A
-
-
-
-Message from client : D
-
-
-
-Generating food at pos:42,16
-
-
-
-Message from client : C
-
-
-
-Message from client : B
-
-
-
-Message from client : C
-
-
-
-Message from client : A
-
-
-
-Message from client : C
-
-
-
-Message from client : B
-
-
-
-Message from client : C
-
-
-
-Message from client : A
-
-
-
-Message from client : D
-
-
-
-Message from client : A
-
-
-
-Message from client : C
-
-
-
-Message from client : B
-
-
 Message from clietn handler :
  #
 
 
-Generating food at pos:54,25
-
-
-
-Message from client : #
-
-
-
-Message from client : C
-
-
-
-Message from client : B
-
-
-
-Message from client : C
-
-
-
-Message from client : A
-
-
-Message from clietn handler :
- D#
-
-
-Generating food at pos:40,2
-
-
-
-Message from client : D#
-
-
-
-Message from client : A
-
-
-
-Message from client : C
-
-
-Message from clietn handler :
- #
-
-
-Generating food at pos:51,37
+Generating food at pos:63,15
 
 
 
@@ -248,19 +66,11 @@ Message from client : C
 Message from client : A
 
 
-
-Message from client : D
-
-
-
-Message from client : B
-
-
 Message from clietn handler :
  #
 
 
-Generating food at pos:5,28
+Generating food at pos:48,35
 
 
 
@@ -268,35 +78,7 @@ Message from client : #
 
 
 
-Message from client : C
-
-
-
-Message from client : A
-
-
-
 Message from client : D
-
-
-
-Message from client : D
-
-
-
-Message from client : D
-
-
-
-Message from client : D
-
-
-
-Message from client : A
-
-
-
-Message from client : C
 
 
 
@@ -308,30 +90,11 @@ Message from client : D
 
 
 
-Message from client : A
-
-
-
-Message from client : C
-
-
-
 Message from client : B
 
 
-Message from clietn handler :
- #
 
-
-Generating food at pos:12,15
-
-
-
-Message from client : #
-
-
-
-Message from client : C
+Message from client : D
 
 
 
@@ -346,7 +109,7 @@ Message from clietn handler :
  #
 
 
-Generating food at pos:57,34
+Generating food at pos:7,35
 
 
 
@@ -358,10 +121,152 @@ Message from client : B
 
 
 
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+Message from clietn handler :
+ A#
+
+
+Generating food at pos:47,27
+
+
+
+Message from client : A#
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:45,31
+
+
+
+Message from client : #
+
+
+
 Message from client : B
 
 
 
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
 Message from client : B
 
 
@@ -369,32 +274,140 @@ Message from client : B
 Message from client : C
 
 
+Message from clietn handler :
+ #
+
+
+Generating food at pos:48,5
+
+
+
+Message from client : #
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+Message from clietn handler :
+ B#
+
+
+Generating food at pos:49,35
+
+
+
+Message from client : B#
+
+
 
 Message from client : C
 
 
-
-Message from client : C
-
-
-
-Message from client : C
+Message from clietn handler :
+ #
 
 
-
-Message from client : C
+Generating food at pos:57,36
 
 
 
-Message from client : C
+Message from client : #
 
 
 
-Message from client : C
+Message from client : A
 
 
 
-Message from client : C
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+body color : 1
+
+
+
+Generating food at pos:15,31
+
+
+
+Name of player : klasdf  , sight = c
+
+
+
+Message from client : init~~klasdf~~c~~
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:25,18
+
+
+
+Message from client : #
+
+
+
+Message from client : A
+
+
+
+Message from client : A
 
 
 
@@ -405,7 +418,7 @@ Message from clietn handler :
  B#
 
 
-Generating food at pos:70,30
+Generating food at pos:56,2
 
 
 
@@ -421,19 +434,23 @@ Message from client : A
 
 
 
-Message from client : C
+body color : 5
+
+
+
+Generating food at pos:5,2
+
+
+
+Name of player : suresh  , sight = c
+
+
+
+Message from client : init~~suresh~~c~~
 
 
 
 Message from client : A
-
-
-
-Message from client : C
-
-
-
-Message from client : B
 
 
 
@@ -441,7 +458,7 @@ Message from client : D
 
 
 
-Message from client : A
+Message from client : B
 
 
 
@@ -449,14 +466,14 @@ Message from client : C
 
 
 
-Message from client : B
+Message from client : A
 
 
 Message from clietn handler :
  D#
 
 
-Generating food at pos:65,28
+Generating food at pos:66,25
 
 
 
@@ -464,11 +481,102 @@ Message from client : D#
 
 
 
-Message from client : A
+Message from client : B
+
+
+
+Message from client : B
 
 
 
 Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:62,35
+
+
+
+Message from client : #
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
 
 
 
@@ -479,7 +587,7 @@ Message from clietn handler :
  #
 
 
-Generating food at pos:28,11
+Generating food at pos:74,22
 
 
 
@@ -492,4 +600,977 @@ Message from client : D
 
 
 Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:38,18
+
+
+
+Message from client : #
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+Message from clietn handler :
+ C#
+
+
+Generating food at pos:65,34
+
+
+
+Message from client : C#
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : A
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:2,6
+
+
+
+Message from client : #
+
+
+
+Message from client : A
+
+
+
+Generating food at pos:41,2
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:49,40
+
+
+
+Message from client : #
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+
+Message from client : B
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:36,29
+
+
+
+Message from client : #
+
+
+
+Message from client : D
+
+
+Message from clietn handler :
+ B#
+
+
+Generating food at pos:23,4
+
+
+
+Message from client : B#
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D$
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ B#
+
+
+Generating food at pos:52,31
+
+
+
+Message from client : B#
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ B#
+
+
+Generating food at pos:64,3
+
+
+
+Message from client : B#
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : A
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:52,42
+
+
+
+Message from client : #
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : C
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : B
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D$
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+Message from clietn handler :
+ B#
+
+
+Generating food at pos:44,8
+
+
+
+Message from client : B#
+
+
+
+Message from client : D
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D
+
+
+Message from clietn handler :
+ #
+
+
+Generating food at pos:73,42
+
+
+
+Message from client : #
+
+
+
+Message from client : B
+
+
+
+Message from client : C
+
+
+
+Message from client : A
+
+
+
+Message from client : D$
+
+
+
+Generating food at pos:13,33
+
+
+
+Generating food at pos:2,37
+
+
+
+Generating food at pos:14,6
+
+
+
+Generating food at pos:69,26
+
+
+
+Generating food at pos:29,15
+
+
+
+Generating food at pos:9,27
+
+
+
+Generating food at pos:34,11
+
+
+
+Generating food at pos:34,42
+
+
+
+Generating food at pos:52,18
+
+
+
+Generating food at pos:10,26
 

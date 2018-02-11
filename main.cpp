@@ -141,9 +141,9 @@ class snake
         snakeDirection = "right" ; 
         id = snakeid ; 
         socket_descriptor = sd ; 
-        player_name = name ; 
+        player_name = name+std::to_string(id) ;
         player_sight = sees ; 
-        bodycolor =  rand()%4+1; 
+        bodycolor =  rand()%5+1; 
         logfile<<"\n\nbody color : " <<bodycolor <<endl<<endl; 
     }
 
@@ -179,8 +179,8 @@ void snake::draw_snake(void)
     {
         mvprintw(parts[i].y  , parts[i].x , "o") ; 
     }
-    mvprintw(parts[i].y  , parts[i].x , "+") ; 
     coloroff(bodycolor) ; 
+    mvprintw(parts[i].y  , parts[i].x , "+") ; 
 }
 
 void snake::add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
@@ -392,7 +392,7 @@ void charecter_code_testing_fun(void)
 void printSpeed(snake snk)
 {
     coloron(CYAN) ; 
-    mvprintw(0 , max_x-20 , "Speed(+/-)= %lu" ,GameObj.getSpeed()/100) ; 
+    mvprintw(0 , max_x-15 , "Speed(+/-)= %lu" ,GameObj.getSpeed()/100) ; 
     refresh() ;
     coloroff(CYAN) ; 
 }
