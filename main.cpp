@@ -65,6 +65,7 @@ class Game
     
     void generateFood() ; 
     int getSnakeIndexFromDescriptor(int) ; 
+    void showInitialChoices() ; 
     void syncSnakeWithClient(snake &) ; 
     int getSnakeIndexFromID(int) ; 
     void reset_max_screen() ; 
@@ -456,7 +457,7 @@ void Game::ask_no_players(string player="single")
             GameObj.initConsoleScreen("off") ; 
             system("clear")  ;
             int no_of_players ; 
-            cout<<"Enter the number of players : "  ; 
+            cout<<"Enter the number of players on this device (any number of LAN clients can join this play ) : "  ; 
             cin>> no_of_players;
             GameObj.setNoOfPlayers(no_of_players) ; 
         }
@@ -863,31 +864,89 @@ void Game::reset_max_screen()
     getmaxyx(stdscr , max_y , max_x ) ; 
 }
 
+void Game::showInitialChoices()
+{
+    system("clear") ; 
+    cout<<"\n1. Start Game *"  ; 
+    cout<<"\n2. Show Features" ; 
+    cout<<"\n3. Exit " ;
+    cout<<"\n\nEnter choice : " ; 
+    int ch ; 
+    cin>>ch ; 
+    string feat="" ;  //features string 
+
+    switch(ch)
+    {
+        case 1:
+            return ; 
+            
+        case 2:
+            feat+="\nGame has two related programs , this is the Game Controller (main program) and other one is the client program which can be used to join the multiplayer mode of the game in a LAN network ." ; 
+            feat+="\n\nHere are the features of the Game Controller : " ;
+            feat+="\n1. Different Modes : \"Single\" or \"Multiplayer\" modes." ; 
+            feat+="\n2. Parallel Control : Parallel controlling of all the snakes in multiplayer mode without any delay. This greatly ups user."  ; 
+            feat+="\n3. Speed Control : User can change the speed of the snakes while playing." ; 
+            feat+="\n4. Scoring System : It has a scoring system for both single and multiplayer modes." ; 
+            feat+= "\n5. Looping screen :  On going through the edge of screen , the snake pops out of the opposite edge." ; 
+            feat+="\n6. Beautiful colors: The snakes will be presented with good looking colors." ; 
+
+            feat+="\n\n\nComing to Client Side Program : " ; 
+            feat+="\n\n7. LAN MULTIPLAYER option: Play with anyone in the same network and see the snakes in both the screen play in synchronization." ; 
+            feat+="\n8. Speed Changes in the Game Controller reflects back at the client side too . " ; 
+            feat+="\n9. Food generated at the server side and client side are also synced." ; 
+            feat+="\n10. On gameover of any client , the players are notified of that player's final score which is shown at the Game Controller." ; 
+            feat+="\n11. Client user can either choose to have his snake displayed in his screen in addition to the snake on the game controller or to only control the snake on game controller without anything displayed on his screen. This is useful , if the client only wants to use his keyboard as a controller." ; 
+
+            GameObj.printAnimated(feat , 10000) ; 
+
+            cout<<"\n\nGo back ? (y) : " ; 
+            char temp ; 
+            cin>>temp ; 
+            break; 
+
+        case 3:
+            exit(5) ; 
+        default:
+            return ; 
+    }
+
+    showInitialChoices() ; 
+}
+
 
 void signalHandler(int code)
 {
     GameObj.initConsoleScreen("off") ; 
     cout.flush() ;
     stringstream out ; 
-    out<<"1.Credits" <<endl; 
-    out<<"2.Exit" <<endl; 
-    out<<"3.Continue" <<endl; 
+    out<<"1.Continue" <<endl; 
+    out<<"2.Credits" <<endl; 
+    out<<"3.Exit" <<endl; 
     out<<"\nEnter choice : " <<endl; 
     cout<<out.str() ; 
     int ch ; 
     cin>>ch ; 
+    string credits="" ; 
 
     switch(ch)
     {
-        case 1:
+        case 2:
+            credits+="\nProgrammer  : Natesh M Bhat" ; 
+            credits+="\nLanguage    : C++" ; 
+            credits+="\nEditor      : Sublime and Vscode" ; 
+            credits+="\nBig Thanks to Prabodh sir for making Object Oriented Concepts clear enough to enable me to code this game. ^_^" ; 
+            credits+="\nDedicated to Kavita mam (MC) :)" ; 
+            GameObj.printAnimated(credits) ; 
+            sleep(3) ; 
             break ; 
 
-        case 2:
+        case 3:
             GameObj.server.stopServer() ;
             logfile.close() ; 
+            GameObj.printAnimated("\nThanks for playing ^_^ . Cya.....") ; 
             exit(1) ; 
             break ; 
-        case 3:
+        case 1:
             GameObj.initConsoleScreen("on") ; 
             break ; 
         default:
@@ -902,10 +961,11 @@ void signalHandler(int code)
 int main(int argc , char * argv[]) 
 {
 
-    signal(SIGINT, signalHandler);
 
     logfile.open("logfile.log" , ios::out) ; 
-    
+    GameObj.showInitialChoices() ; 
+
+    signal(SIGINT, signalHandler);
     HANDLE_EVERYTHING_TILL_EVENT_LOOP() ; 
     int activity ; 
     

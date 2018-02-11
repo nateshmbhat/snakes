@@ -479,7 +479,7 @@ void snake::gameOverHandler()
     clear() ;
     GameObj.initConsoleScreen("off") ;
     system("clear") ; 
-    string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+"\n\n" ; 
+    string gameovermessage = "\n\n\nGAME OVER " + player_name+" :(\n\n" ; 
     gameovermessage+="Score : "+std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
     gameovermessage+="\n\nPress ctrl+c to exit." ; 
     GameObj.printAnimated(gameovermessage) ; 
