@@ -324,11 +324,11 @@ void snake::gameOverHandler()
     {
         GameObj.initConsoleScreen("off") ; 
         cout<<"\nNo Snakes Left to Play :(  Exiting Game ..." <<endl<<endl; 
-        sleep(3) ;
+        sleep(2) ;
         exit(3) ; 
     }
 
-    sleep(4) ;
+    sleep(3) ;
 }
 
 
@@ -478,10 +478,10 @@ void Game::KeyPressHandler()
         }
 
         if (GameObj.getGameMode()=="multi"){
-            for(int i =1 ; i<allSnakes.size() ; i++)
+            for(int i =0 ; i<allSnakes.size() ; i++)
             {
                 //only move if the key press occurs for offline snakes
-                if(allSnakes[i].getSocketDescriptor()<0)
+                if(allSnakes[i].getSocketDescriptor()<0 && allSnakes[i].getID()<0)
                     allSnakes[i].handleMovementKeyPress(ch) ; 
             }
         }
