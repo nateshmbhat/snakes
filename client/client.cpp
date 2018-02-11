@@ -192,12 +192,12 @@ void Game::handleMessageFromServer(string msg)
     {
         int start = msg.find("$") ;
         string num="" ; 
-        for(int i = start ; msg[i]!='$' ; i++)
+        for(int i = start+1 ; msg[i]!='$' ; i++)
         {
             num+=msg[i] ; 
         }
         mainSnakePtr->setScore(stoi(num)) ;
-
+        mainSnakePtr->gameOverHandler() ; 
     }
 
     else{
@@ -365,8 +365,6 @@ void Game::printFood(string status="old")
 
 
 
-
-
 void snake::draw_snake(void)
 {
     int i ; 
@@ -376,6 +374,7 @@ void snake::draw_snake(void)
     }
     mvprintw(parts[i].y  , parts[i].x , "+") ; 
 }
+
 
 void snake::add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
 {
@@ -387,6 +386,7 @@ void snake::add_part(int x , int y , string direction = "right" ) //adds the par
         parts.insert(parts.begin() ,obj) ; 
 }
 
+
 //called to make the snake appear on the screen for the first time 
 void snake::init_snake_on_screen()
 {
@@ -396,6 +396,7 @@ void snake::init_snake_on_screen()
     
     draw_snake() ;
 }
+
 
 //Used to move the snake in the given direction 
 void snake::move_snake(string direction)
@@ -444,6 +445,7 @@ void snake::move_snake(string direction)
     refresh() ; 
 }
 
+
 void Game::printAnimated(string msg  , int speed)
 {
 for(int c = 0  ; msg[c] ; c++)
@@ -455,6 +457,7 @@ for(int c = 0  ; msg[c] ; c++)
 
 }
 
+
 void snake::gameOverHandler()
 {
 
@@ -464,13 +467,13 @@ void snake::gameOverHandler()
     string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+"\n\n" ; 
     gameovermessage+="Score : "+std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
     gameovermessage+="\n\nPress ctrl+c to continue ." ; 
-
     GameObj.printAnimated(gameovermessage) ; 
     GameObj.sock_obj.closeSocket() ; 
    
     sleep(50000) ;
     
 }
+
 
 //Checks if the snake bites itself or not ! :D 
 int snake::check_snake_overlap()
@@ -483,12 +486,14 @@ for(int i =0 ; i<parts.size()-1 ; i++)
         }
 }
 
+
 void snake::printScore(string pos="left")
 {
     if(pos=="right")
         mvprintw(0 , 15, "Score = %d" , score) ; 
     mvprintw(0 , 0 , "Score = %d" , score) ; 
 }
+
 
 void snake::handleMovementKeyPress(char ch )
 {
@@ -499,10 +504,6 @@ void snake::handleMovementKeyPress(char ch )
     else if(keyLeft==ch){ if(getDirection()!="right")move_snake("left") ; } 
     else return ; 
 }
-
-
-
-
 
 
 void draw_border_window(int  , int) ; 
@@ -600,7 +601,6 @@ int main()
     string serverAddress  , player_name , player_sight ;  
     cout<<"Enter your name : " ; 
 
-    cin.ignore() ; 
     getline(cin , player_name) ; 
 
 
