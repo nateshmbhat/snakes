@@ -16,9 +16,19 @@
 #include <sys/socket.h> 
 #include <netinet/in.h> 
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
-using namespace std ; 
 #define TRUE   1 
 #define FALSE  0 
+#define RED 1
+#define GREEN 2
+#define BLUE 4
+#define BLACK 5
+#define CYAN 6
+#define MAGENTA 0
+#define YELLOW 3
+
+using namespace std ; 
+#define coloron(a) attron(COLOR_PAIR(a))
+#define coloroff(a) attroff(COLOR_PAIR(a))
 
 //Used classes 
 class SocketHandler ; 
@@ -219,21 +229,24 @@ void Game::initConsoleScreen(string state)
 {
     if(state=="on")
     {
-        initscr() ; //Init screen 
+       initscr() ; //Init screen 
         noecho() ; // Dont show any pressed char  
         curs_set(false) ; // Don't show the cursor 
-            
-
+        start_color() ; 
         getmaxyx(stdscr , max_y , max_x) ; 
         center_x = max_x/2  , center_y = max_y/2 ; 
-        
         cbreak() ; //Dont wait for enter to be pressed when using getch 
         nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
-
     }
 
     else if(state=="off"){
+        clear() ; 
+        flushinp() ; 
+        fflush(stdin) ; 
+        use_default_colors() ; 
         endwin() ; 
+        cout.flush() ; 
+        system("clear") ;
     }
 }
 
@@ -561,7 +574,7 @@ void Game::reset_max_screen()
 
 void signalHandler(int code)
 {
-    endwin() ; 
+    GameObj.initConsoleScreen("off") ; 
     GameObj.printAnimated("\nThanks for playing :) Cya ...") ; 
     GameObj.sock_obj.closeSocket() ; 
     logfile.close() ; 

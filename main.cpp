@@ -8,6 +8,18 @@
 #include<fstream>
 #include<regex>
 
+#define RED 7
+#define GREEN 2
+#define YELLOW 3
+#define BLUE 1
+#define BLACK 0
+#define CYAN 4
+#define WHITE 8
+#define MAGENTA 5
+
+#define coloron(a) attron(COLOR_PAIR(a))
+#define coloroff(a) attroff(COLOR_PAIR(a))
+
 using namespace std ; 
 
 class snake ; 
@@ -113,6 +125,7 @@ class snake
     private :
     vector <snake_part> parts ;
     string snakeDirection  ;
+    int bodycolor ; 
     int socket_descriptor ; 
     int score ;
     string player_sight ; //what the player sees and plays 
@@ -130,6 +143,8 @@ class snake
         socket_descriptor = sd ; 
         player_name = name ; 
         player_sight = sees ; 
+        bodycolor =  rand()%4+1; 
+        logfile<<"\n\nbody color : " <<bodycolor <<endl<<endl; 
     }
 
     friend void signalHandler(int) ; 
@@ -147,7 +162,6 @@ class snake
     void init_snake_on_screen() ; 
     void move_snake(string) ; 
     void check_snake_overlap() ; 
-    void printScore(string) ; 
     void handleMovementKeyPress(char) ; 
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
@@ -159,12 +173,14 @@ class snake
 
 void snake::draw_snake(void)
 {
-    int i ; 
+    int i ;
+    coloron(bodycolor) ; 
     for(  i =0 ; i<parts.size()-1 ; i++)
     {
         mvprintw(parts[i].y  , parts[i].x , "o") ; 
     }
     mvprintw(parts[i].y  , parts[i].x , "+") ; 
+    coloroff(bodycolor) ; 
 }
 
 void snake::add_part(int x , int y , string direction = "right" ) //adds the part object taking the coordinates to the end of the part vector in snake
@@ -252,14 +268,6 @@ void snake::check_snake_overlap()
 }
 
 
-void snake::printScore(string pos="left")
-{
-    if(pos=="right")
-        mvprintw(0 , 15, "Score = %d" , score) ; 
-    mvprintw(0 , 0 , "Score = %d" , score) ; 
-}
-
-
 void snake::handleMovementKeyPress(char ch )
 {
     if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
@@ -295,12 +303,14 @@ void Game::printScores()
     int s  = 0 ; 
     string temp ; 
 
+    coloron(WHITE) ; 
     for(int i =0 ; i<allSnakes.size() ; i++)
     {
         temp = allSnakes[i].player_name ; 
         mvprintw(0 , s,"%s:%d" , temp.c_str() , allSnakes[i].getScore()); 
         s+= temp.length()+4 ; 
     }
+    coloroff(WHITE) ; 
 }
 
 
@@ -311,7 +321,6 @@ void snake::gameOverHandler()
     system("clear") ; 
     string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+" :(\n\n" ; 
     gameovermessage+="Score : " + std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
-    gameovermessage+="\n\nGame will continue in few seconds." ; 
 
     GameObj.printAnimated(gameovermessage) ; 
     
@@ -333,6 +342,7 @@ void snake::gameOverHandler()
         exit(3) ; 
     }
 
+    GameObj.printAnimated("\n\nGame will continue in few seconds." ) ; 
     sleep(3) ;
 }
 
@@ -381,8 +391,10 @@ void charecter_code_testing_fun(void)
 
 void printSpeed(snake snk)
 {
+    coloron(CYAN) ; 
     mvprintw(0 , max_x-20 , "Speed(+/-)= %lu" ,GameObj.getSpeed()/100) ; 
     refresh() ;
+    coloroff(CYAN) ; 
 }
 
 
@@ -416,8 +428,12 @@ void Game::ask_no_players(string player="single")
             break ; 
         }
 
+    coloron(BLUE) ; 
     mvprintw(1 , 5 , " SINGLE PLAYER or") ;
+    coloroff(BLUE) ; 
+    coloron(GREEN) ; 
     mvprintw(1 +1, 5 , " MULTI PLAYER ? ") ;
+    coloroff(GREEN) ; 
 
     if(player=="single")
         mvprintw(1 , 2 , ">>>") ; 
@@ -571,20 +587,18 @@ void Game::initConsoleScreen(string state)
         initscr() ; //Init screen 
         noecho() ; // Dont show any pressed char  
         curs_set(false) ; // Don't show the cursor 
-            
-
+        start_color() ; 
         getmaxyx(stdscr , max_y , max_x) ; 
         center_x = max_x/2  , center_y = max_y/2 ; 
-        
         cbreak() ; //Dont wait for enter to be pressed when using getch 
         nodelay(stdscr , 1) ;  //Use non blocking input for getch which just returns ERR if there is no input (ERR=-1)
-
     }
 
     else if(state=="off"){
         clear() ; 
         flushinp() ; 
         fflush(stdin) ; 
+        use_default_colors() ; 
         endwin() ; 
         system("clear") ; 
     }
@@ -625,7 +639,9 @@ void Game::generateFood()
     if(y<2) y = 2 ; 
 
     logfile<<"\n\nGenerating food at pos:"<<x <<","<<y<<"\n\n" ; 
+    coloron(RED) ; 
     mvprintw(y, x ,"#") ;   
+    coloroff(RED) ; 
     setFoodPos(x , y) ;
 
     if(gamemode=="multi")
@@ -641,7 +657,9 @@ void Game::printFood(string status="old")
     
     if(!getFoodX() && !getFoodY())
         generateFood() ; 
+    coloron(RED) ; 
     mvprintw(getFoodY(), getFoodX() ,"#") ;   
+    coloroff(RED) ; 
 }
 
 
@@ -652,6 +670,14 @@ void HANDLE_EVERYTHING_TILL_EVENT_LOOP()
 {
     srand(time(NULL)) ;
     GameObj.initConsoleScreen("on") ; 
+
+    init_pair(RED , COLOR_RED , COLOR_BLACK) ; 
+    init_pair(YELLOW , COLOR_YELLOW , COLOR_BLACK) ; 
+    init_pair(GREEN , COLOR_GREEN , COLOR_BLACK) ;
+    init_pair(WHITE , COLOR_WHITE , COLOR_BLACK) ; 
+    init_pair(MAGENTA, COLOR_MAGENTA, COLOR_BLACK) ;
+    init_pair(BLUE, COLOR_BLUE, COLOR_BLACK) ;
+    init_pair(CYAN , COLOR_CYAN , COLOR_BLACK) ; 
 
     //Asks the number of players who want to play  (single or multiplayer (with 2 players )) ; 
     GameObj.ask_no_players() ; 
@@ -821,6 +847,7 @@ void Game::handleActivity()
     else handleIOActivity() ; 
 }
 
+
 int Game::checkClientActivity(){
     return server.checkClientActiviy() ; 
 }
@@ -833,11 +860,12 @@ void Game::reset_max_screen()
 
 void signalHandler(int code)
 {
-    endwin() ; 
+    GameObj.initConsoleScreen("off") ; 
     cout.flush() ;
     stringstream out ; 
     out<<"1.Credits" <<endl; 
     out<<"2.Exit" <<endl; 
+    out<<"3.Continue" <<endl; 
     out<<"\nEnter choice : " <<endl; 
     cout<<out.str() ; 
     int ch ; 
@@ -852,6 +880,9 @@ void signalHandler(int code)
             GameObj.server.stopServer() ;
             logfile.close() ; 
             exit(1) ; 
+            break ; 
+        case 3:
+            GameObj.initConsoleScreen("on") ; 
             break ; 
         default:
             GameObj.server.stopServer() ; 
@@ -914,4 +945,3 @@ int main(int argc , char * argv[])
     }
  
 }
-
