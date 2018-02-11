@@ -454,7 +454,6 @@ for(int c = 0  ; msg[c] ; c++)
         cout.flush() ; 
         usleep(speed) ; 
     }
-
 }
 
 
@@ -465,7 +464,7 @@ void snake::gameOverHandler()
     system("clear") ; 
     string gameovermessage = "\n\n\nGAME OVER FOR " + player_name+"\n\n" ; 
     gameovermessage+="Score : "+std::to_string(score)+"\nBetter Luck Next time :)\n\n" ; 
-    gameovermessage+="\n\nPress ctrl+c to continue ." ; 
+    gameovermessage+="\n\nPress ctrl+c to exit." ; 
     GameObj.printAnimated(gameovermessage) ; 
     GameObj.sock_obj.closeSocket() ; 
     sleep(50000) ;
@@ -480,7 +479,8 @@ int headX = getHeadX() , headY  = getHeadY() ;
 for(int i =0 ; i<parts.size()-1 ; i++)
     if(parts[i].x==headX && parts[i].y==headY)
         {
-            gameOverHandler() ; 
+            GameObj.sock_obj.sendData("$") ; 
+            gameOverHandler() ;
         }
 }
 
@@ -562,27 +562,10 @@ void Game::reset_max_screen()
 void signalHandler(int code)
 {
     endwin() ; 
-    cout.flush() ;
-    stringstream out ; 
-    out<<"1.Credits" <<endl; 
-    out<<"2.Exit" <<endl; 
-    out<<"\nEnter choice : " <<endl; 
-    cout<<out.str() ; 
-    int ch ; 
-    cin>>ch ; 
-
-    switch(ch)
-    {
-        case 1:
-            ;
-            break ; 
-        case 2:
-            GameObj.sock_obj.closeSocket() ; 
-            logfile.close() ; 
-            exit(1) ; 
-    }
-
-    exit(2) ; 
+    GameObj.printAnimated("\nThanks for playing :) Cya ...") ; 
+    GameObj.sock_obj.closeSocket() ; 
+    logfile.close() ; 
+    exit(1) ; 
 }
 
 
@@ -603,15 +586,15 @@ int main()
     cin>>serverAddress ; 
 
     cout<<"\nDo you want your snake to be displayed on your screen ? \n" ; 
-    cout<<"1.Yes (You will see your snake on your screen and the same snake appears on the game controller) : " <<endl<<endl; 
-    cout<<"2.No  (You will be able to control your snake by watching the game controller screen and your keyboard acts as a controller. This is the default choice ) : " <<endl;  
+    cout<<"1.Yes (You will see your snake on your screen and the same snake appears on the game controller.Default choice) : " <<endl<<endl; 
+    cout<<"2.No  (You will be able to control your snake by watching the game controller screen and your keyboard acts as a controller."<<endl; 
     cout<<endl<<"Enter choice (1 or 2) : " ; 
     cin>>player_sight;
 
-    if(player_sight=="1")
-        player_sight = "c" ;
+    if(player_sight=="2")
+        player_sight = "s" ;
     else
-        player_sight = "s" ; 
+        player_sight = "c" ; 
 
 
     //Set some socket options

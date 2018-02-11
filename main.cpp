@@ -48,9 +48,12 @@ class Game
         speed = 70000; 
         foodObj.x  = foodObj.y = 0 ;
     }
+
+    friend void signalHandler(int) ; 
     
     void generateFood() ; 
     int getSnakeIndexFromDescriptor(int) ; 
+    void syncSnakeWithClient(snake &) ; 
     int getSnakeIndexFromID(int) ; 
     void reset_max_screen() ; 
     void printAnimated(string ,  int =40000) ; 
@@ -129,6 +132,8 @@ class snake
         player_name = name ; 
         player_sight = sees ; 
     }
+
+    friend void signalHandler(int) ; 
 
     int getScore(void){return score ; }
     int getID(){return id ; }
@@ -426,7 +431,6 @@ void Game::ask_no_players(string player="single")
     }
 
 
-
     if(GameObj.getGameMode()=="multi")
         {
             flushinp() ; 
@@ -594,6 +598,7 @@ void Game::initConsoleScreen(string state)
         flushinp() ; 
         fflush(stdin) ; 
         endwin() ; 
+        system("clear") ; 
     }
 }
 
@@ -635,10 +640,10 @@ void Game::generateFood()
     mvprintw(y, x ,"#") ;   
     setFoodPos(x , y) ;
 
-    // if(gamemode=="multi")
-    // {
-    //     LAN_sendFoodCoordinates( getFoodX() , getFoodY()) ; 
-    // }
+    if(gamemode=="multi")
+    {
+        LAN_sendFoodCoordinates( getFoodX() , getFoodY()) ; 
+    }
 }
 
 void Game::printFood(string status="old")
@@ -691,6 +696,21 @@ void Game::handleNewConnection()
 }
 
 
+void Game::syncSnakeWithClient(snake& clientsnake)
+{
+    //Only call this when the client snakes eats a food 
+    //food coordinate represents client snake's head. Translate the snake with the the offset in reference to the food coord.
+    int x_diff = getFoodX() - clientsnake.getHeadX() ;
+    int y_diff = getFoodY()  - clientsnake.getHeadY() ; 
+
+    for(int i =0 ; i<clientsnake.parts.size() ; i++)
+    {
+        clientsnake.parts[i].x += x_diff ;
+        clientsnake.parts[i].y+=y_diff ; 
+    }
+
+}
+
 
 void Game::handleIOActivity()
 {
@@ -719,6 +739,7 @@ void Game::handleIOActivity()
 
         else if(msg.find("init~~")!=string::npos)
         {
+            LAN_sendFoodCoordinates(foodObj.x , foodObj.y) ; 
             string name="" , sight="" ; 
             int pos = msg.find("init~~") ;
             int i ; 
@@ -731,7 +752,13 @@ void Game::handleIOActivity()
             sight = msg[i+2] ; 
 
             logfile<<endl<<"\nName of player : " <<name <<"  , sight = " <<sight << endl<<endl; 
-            
+
+            GameObj.initConsoleScreen("off") ;   
+            system("clear") ; 
+            cout<<"\n\n"<<name<<" joined the game.\n\n" ; 
+            sleep(1) ; 
+            system("clear") ; 
+            GameObj.initConsoleScreen("on") ; 
             allSnakes[snake_index].setPlayerName(name) ;  
             allSnakes[snake_index].setPlayerSight(sight) ;
         }
@@ -749,6 +776,8 @@ void Game::handleIOActivity()
                         allSnakes[snake_index].add_part(allSnakes[snake_index].getHeadX() , allSnakes[snake_index].getHeadY()) ; 
 
                         allSnakes[snake_index].score++ ; 
+
+                        syncSnakeWithClient(allSnakes[snake_index]) ; 
                         
                         printFood("new") ; 
 
@@ -807,13 +836,33 @@ void Game::reset_max_screen()
 }
 
 
-
 void signalHandler(int code)
 {
-    endwin() ;
-    logfile.close() ; 
-    cout<<"\nExit gracefully. \n" ; 
-    exit(0) ; 
+    endwin() ; 
+    cout.flush() ;
+    stringstream out ; 
+    out<<"1.Credits" <<endl; 
+    out<<"2.Exit" <<endl; 
+    out<<"\nEnter choice : " <<endl; 
+    cout<<out.str() ; 
+    int ch ; 
+    cin>>ch ; 
+
+    switch(ch)
+    {
+        case 1:
+            break ; 
+
+        case 2:
+            GameObj.server.stopServer() ;
+            logfile.close() ; 
+            exit(1) ; 
+            break ; 
+        default:
+            GameObj.server.stopServer() ; 
+            logfile.close() ; 
+            exit(1) ;
+    }
 }
 
 
