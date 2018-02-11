@@ -68,7 +68,6 @@ class Game
     void printScores() ; 
     void handleNewConnection() ; 
     void handleIOActivity() ; 
-    void handleMessageFromServer(string ) ;
     int checkClientActivity() ; //returns activity number
     void initServerForMultiplayer() ; 
     void setClientsList() ; 
@@ -147,7 +146,7 @@ class snake
     void add_part(int , int , string) ; 
     void init_snake_on_screen() ; 
     void move_snake(string) ; 
-    int check_snake_overlap() ; 
+    void check_snake_overlap() ; 
     void printScore(string) ; 
     void handleMovementKeyPress(char) ; 
 
@@ -239,12 +238,13 @@ void snake::move_snake(string direction)
 
 
 //Checks if the snake bites itself or not ! :D 
-int snake::check_snake_overlap()
+void snake::check_snake_overlap()
 {
     int headX = getHeadX() , headY  = getHeadY() ; 
     for(int i =0 ; i<parts.size()-1 ; i++)
     if(parts[i].x==headX && parts[i].y==headY)
         {
+            if(socket_descriptor>0) return ; 
             if(player_sight=="s")
                 GameObj.server.sendData(socket_descriptor , "$"+std::to_string(score)+"$") ; 
             gameOverHandler() ; 
@@ -562,18 +562,6 @@ void Game::setFoodPos(int x , int y)
    foodObj.y = y ;  
 }
 
-void Game::handleMessageFromServer(string msg)
-{
-    for(int i =0 ; i<msg.length()  ; i++)
-    {
-        if(msg[i]=='-')
-            GameObj.setSpeed(GameObj.getSpeed()+3000) ;             
-        else if(msg[i]=='+')
-            GameObj.setSpeed(GameObj.getSpeed()-3000) ; 
-    }
-}
-
-
 
 //Initialise the console with the decision to turn off or on the enter key and cursor
 void Game::initConsoleScreen(string state)
@@ -761,6 +749,13 @@ void Game::handleIOActivity()
             GameObj.initConsoleScreen("on") ; 
             allSnakes[snake_index].setPlayerName(name) ;  
             allSnakes[snake_index].setPlayerSight(sight) ;
+        }
+
+        else if(msg.find("$")!=string::npos)
+        {
+            //game over handle if recevies "$" msg from client .  
+            int start = msg.find("$") ;
+            allSnakes[snake_index].gameOverHandler() ; 
         }
 
         

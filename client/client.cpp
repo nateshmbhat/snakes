@@ -459,6 +459,7 @@ for(int c = 0  ; msg[c] ; c++)
 
 void snake::gameOverHandler()
 {
+    GameObj.sock_obj.sendData("$") ; 
     clear() ;
     GameObj.initConsoleScreen("off") ;
     system("clear") ; 
@@ -479,7 +480,6 @@ int headX = getHeadX() , headY  = getHeadY() ;
 for(int i =0 ; i<parts.size()-1 ; i++)
     if(parts[i].x==headX && parts[i].y==headY)
         {
-            GameObj.sock_obj.sendData("$") ; 
             gameOverHandler() ;
         }
 }
