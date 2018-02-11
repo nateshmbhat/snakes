@@ -62,6 +62,7 @@ class Game
     void moveAllSnakes() ; 
     void LAN_sendFoodCoordinates(int , int ) ; 
     void setFoodPos(int , int) ;
+    void printScores() ; 
     void handleNewConnection() ; 
     void handleIOActivity() ; 
     void handleMessageFromServer(string ) ;
@@ -284,6 +285,19 @@ int Game::getSnakeIndexFromID(int id)
     }
 }
 
+void Game::printScores()
+{
+    int s  = 0 ; 
+    string temp ; 
+
+    for(int i =0 ; i<allSnakes.size() ; i++)
+    {
+        temp = allSnakes[i].player_name ; 
+        mvprintw(0 , s,"%s:%d" , temp.c_str() , allSnakes[i].getScore()); 
+        s+= temp.length()+4 ; 
+    }
+}
+
 
 void snake::gameOverHandler()
 {
@@ -362,7 +376,7 @@ void charecter_code_testing_fun(void)
 
 void printSpeed(snake snk)
 {
-    mvprintw(0 , max_x-20 , "Speed= %lu" ,GameObj.getSpeed()) ; 
+    mvprintw(0 , max_x-20 , "Speed(+/-)= %lu" ,GameObj.getSpeed()/100) ; 
     refresh() ;
 }
 
@@ -429,7 +443,7 @@ void Game::ask_no_players(string player="single")
     if(GameObj.getNoOfPlayers())
     {
         snake first_snake  = snake('A' , 'B' , 'C' , 'D' , 0 ) ; 
-        first_snake.setPlayerName("Player 0" ) ; 
+        first_snake.setPlayerName("Default" ) ; 
         GameObj.allSnakes.push_back(first_snake) ;
     }
 
@@ -576,11 +590,13 @@ void Game::initConsoleScreen(string state)
     }
 
     else if(state=="off"){
+        clear() ; 
         flushinp() ; 
         fflush(stdin) ; 
         endwin() ; 
     }
 }
+
 
 //Returns food obj with a copy of data of foodObj member of game class
 food Game::getFoodPos()
@@ -605,7 +621,6 @@ void Game::LAN_sendFoodCoordinates(int x , int y)
             server.sendData(sd , string(foodcoord)) ; 
         }
     }
-
 }
 
 
@@ -688,15 +703,17 @@ void Game::handleIOActivity()
 
         msg = server.handleIOActivity(clients[i]) ;   //handleIOActivity takes a client sd from the list of client sds which  and returns the string sent by client 
 
-
         //Handle disconnected clients 
         if(msg=="")
         {
-            cout<<"\nclient disconnected : " ;  
-            cout<<"\nremoving client with sd = " << clients[i] ;
+            GameObj.initConsoleScreen("off") ; 
+            system("clear") ; 
+            cout<< allSnakes[snake_index].player_name <<" left the game.\n\n"  ; 
             GameObj.server.closeSocket(clients[i]) ; 
             allSnakes.erase(allSnakes.begin()+snake_index) ; 
             setNoOfPlayers(getNoOfPlayers()-1) ; 
+            sleep(1) ; 
+            GameObj.initConsoleScreen("on") ; 
         }
 
 
@@ -840,6 +857,7 @@ int main(int argc , char * argv[])
         clear() ;
 
         GameObj.moveAllSnakes() ; 
+        GameObj.printScores() ; 
 
         // if(no_players=="multi"){  snk1.printScore("right") ; snk1.move_snake(snk1.getDirection());  }
 

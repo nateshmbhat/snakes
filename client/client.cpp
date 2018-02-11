@@ -460,7 +460,6 @@ for(int c = 0  ; msg[c] ; c++)
 
 void snake::gameOverHandler()
 {
-
     clear() ;
     GameObj.initConsoleScreen("off") ;
     system("clear") ; 
@@ -469,9 +468,8 @@ void snake::gameOverHandler()
     gameovermessage+="\n\nPress ctrl+c to continue ." ; 
     GameObj.printAnimated(gameovermessage) ; 
     GameObj.sock_obj.closeSocket() ; 
-   
     sleep(50000) ;
-    
+
 }
 
 
@@ -497,7 +495,6 @@ void snake::printScore(string pos="left")
 
 void snake::handleMovementKeyPress(char ch )
 {
-
     if(keyUp==ch){ if(getDirection() !="down") move_snake("up") ; } 
     else if(keyDown==ch){ if(getDirection()!= "up")move_snake("down") ; } 
     else if(keyRight==ch){ if(getDirection()!="left")move_snake("right") ; } 
@@ -552,7 +549,7 @@ void charecter_code_testing_fun(void)
 
 void printSpeed(snake snk)
 {
-    mvprintw(0 , max_x-20 , "Speed= %lu" ,GameObj.getSpeed()) ; 
+    mvprintw(0 , max_x-20 , "Speed: %lu" ,GameObj.getSpeed()/100) ; 
     refresh() ;
 }
 
@@ -561,8 +558,6 @@ void Game::reset_max_screen()
 {
     getmaxyx(stdscr , max_y , max_x ) ; 
 }
-
-
 
 void signalHandler(int code)
 {
@@ -661,10 +656,10 @@ int main()
 
             printSpeed(first_snake) ; 
             GameObj.printFood() ;
+            first_snake.printScore() ; 
         }
+
         refresh() ;
-
-
         //Read for any incoming data from server ,,,
         GameObj.sock_obj.readData() ; 
 
