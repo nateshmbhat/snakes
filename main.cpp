@@ -141,7 +141,7 @@ class snake
         snakeDirection = "right" ; 
         id = snakeid ; 
         socket_descriptor = sd ; 
-        player_name = name+std::to_string(id) ;
+        player_name = name+std::to_string(-1*id) ;
         player_sight = sees ; 
         bodycolor =  rand()%5+1; 
         logfile<<"\n\nbody color : " <<bodycolor <<endl<<endl; 
@@ -155,6 +155,7 @@ class snake
     void setPlayerName(string name){player_name = name ;}
     void gameOverHandler() ; 
     void setPlayerSight(string sight){player_sight = sight; }
+    void setBodyColor(int color){bodycolor = color ; } 
     string getPlayerSight(){return player_sight ; }
     int getSocketDescriptor(){return socket_descriptor ; }
     void draw_snake() ; 
@@ -253,14 +254,16 @@ void snake::move_snake(string direction)
 
 
 
-//Checks if the snake bites itself or not ! :D 
-void snake::check_snake_overlap()
+//Checks if the snake bites itself or not and then handles it 
+void snake::check_snake_overlap() //also handler
 {
     int headX = getHeadX() , headY  = getHeadY() ; 
     for(int i =0 ; i<parts.size()-1 ; i++)
     if(parts[i].x==headX && parts[i].y==headY)
         {
-            if(socket_descriptor>0) return ; 
+            //dont gameover if the player_sight is c and if it is a client . There is seperate message handler to handle .
+            //gameover when the client sends the gameover message . Only then gameover
+            if(socket_descriptor>0 && player_sight=="c") return ; 
             if(player_sight=="s")
                 GameObj.server.sendData(socket_descriptor , "$"+std::to_string(score)+"$") ; 
             gameOverHandler() ; 
@@ -742,11 +745,12 @@ void Game::handleIOActivity()
         {
             GameObj.initConsoleScreen("off") ; 
             system("clear") ; 
-            cout<< allSnakes[snake_index].player_name <<" left the game.\n\n"  ; 
+            cout<< allSnakes[snake_index].player_name <<" left the game.\n" ; 
+            cout<<"Score : " <<allSnakes[snake_index].score <<"\n\n";
             GameObj.server.closeSocket(clients[i]) ; 
             allSnakes.erase(allSnakes.begin()+snake_index) ; 
             setNoOfPlayers(getNoOfPlayers()-1) ; 
-            sleep(1) ; 
+            sleep(2) ; 
             GameObj.initConsoleScreen("on") ; 
         }
 
@@ -775,7 +779,9 @@ void Game::handleIOActivity()
             GameObj.initConsoleScreen("on") ; 
             allSnakes[snake_index].setPlayerName(name) ;  
             allSnakes[snake_index].setPlayerSight(sight) ;
+            allSnakes[snake_index].setBodyColor(int(msg[msg.find("&")+1]-'0')) ; 
         }
+
 
         else if(msg.find("$")!=string::npos)
         {

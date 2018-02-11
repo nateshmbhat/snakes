@@ -16,19 +16,18 @@
 #include <sys/socket.h> 
 #include <netinet/in.h> 
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
-#define TRUE   1 
-#define FALSE  0 
-#define RED 1
+#define RED 7
 #define GREEN 2
-#define BLUE 4
-#define BLACK 5
-#define CYAN 6
-#define MAGENTA 0
 #define YELLOW 3
+#define BLUE 1
+#define BLACK 0
+#define CYAN 4
+#define WHITE 8
+#define MAGENTA 5
 
-using namespace std ; 
 #define coloron(a) attron(COLOR_PAIR(a))
 #define coloroff(a) attroff(COLOR_PAIR(a))
+using namespace std ; 
 
 //Used classes 
 class SocketHandler ; 
@@ -71,11 +70,10 @@ class snake
     friend Game ; 
     vector <snake_part> parts ;
     string snakeDirection  ;
-    int score ;
     string player_name ; 
     string player_sight ; 
     char keyUp , keyDown , keyRight , keyLeft ; 
-    int id ; 
+    int score ,  id , bodycolor ; 
 
     public :
     snake(char up , char down , char right , char left , int snakeid ,string name="Name" )
@@ -85,7 +83,8 @@ class snake
         snakeDirection = "right" ; 
         id = snakeid ; 
         player_name = name ; 
-        
+        bodycolor =  rand()%5+1; 
+        logfile<<"\n\nbody color : " <<bodycolor <<endl<<endl;
     }
 
     int getHeadX(void){return parts.at(parts.size()-1).x;}
@@ -93,6 +92,7 @@ class snake
     string getDirection(void){return snakeDirection; }
     void gameOverHandler() ; 
     int getScore(void){return score ; }
+    int getBodyColor(){return bodycolor ; }
     int setScore(int s){score = s ; return score ; }
     void setPlayerSight(string sight){player_sight = sight ; }
     string getPlayerSight(){return player_sight ; }
@@ -149,6 +149,7 @@ class Game
     void setMainSnakePtr(snake * ptr)  { mainSnakePtr = ptr ; }
     void printFood(string ) ;
     void printAnimated(string , int = 60000) ; 
+    void initColors() ; 
     void setFoodPos(int , int) ;
     void handleMessageFromServer(string ) ; 
     int getFoodX()
@@ -166,6 +167,7 @@ class Game
     long int getSpeed(void){return speed; }
 };
 Game GameObj(1) ;
+
 
 //Setter method to set the position of food 
 void Game::setFoodPos(int x , int y)
@@ -186,12 +188,7 @@ void Game::handleMessageFromServer(string msg)
         string str_x = msg.substr(start_colon+1 , camma-1) ;
         string str_y = msg.substr(camma+1 , 3) ; 
 
-        // GameObj.initConsoleScreen("off") ; 
         int x  = stoi(str_x)  , y = stoi(str_y) ; 
-        // cout<<"x = "<<x <<" y= "<<y ; 
-        // cout.flush() ;
-
-        // GameObj.initConsoleScreen("on") ; 
 
         GameObj.setFoodPos(x , y) ; 
 
@@ -263,7 +260,9 @@ void Game::generateFood()
     int x = random()%max_x , y = random()%max_y  ; 
     if(!x)x = 2 ; 
     if(!y) y = 2 ; 
+    coloron(RED) ; 
     mvprintw(y, x ,"#") ;   
+    coloroff(RED) ; 
     setFoodPos(x , y) ;
 }
 
@@ -275,7 +274,9 @@ void Game::printFood(string status="old")
     
     if(!GameObj.getFoodX() && !GameObj.getFoodY())
         generateFood() ; 
+    coloron(RED) ;
     mvprintw(foodObj.y, foodObj.x ,"#") ;   
+    coloroff(RED) ; 
 }
 
 
@@ -381,10 +382,12 @@ void Game::printFood(string status="old")
 void snake::draw_snake(void)
 {
     int i ; 
+    coloron(bodycolor) ; 
     for(  i =0 ; i<parts.size()-1 ; i++)
     {
         mvprintw(parts[i].y  , parts[i].x , "o") ; 
     }
+    coloroff(bodycolor) ; 
     mvprintw(parts[i].y  , parts[i].x , "+") ; 
 }
 
@@ -545,6 +548,17 @@ void draw_border_window( int max_x , int max_y)
 }
 
 
+void Game::initColors()
+{
+    init_pair(RED , COLOR_RED , COLOR_BLACK) ; 
+    init_pair(YELLOW , COLOR_YELLOW , COLOR_BLACK) ; 
+    init_pair(GREEN , COLOR_GREEN , COLOR_BLACK) ;
+    init_pair(WHITE , COLOR_WHITE , COLOR_BLACK) ; 
+    init_pair(MAGENTA, COLOR_MAGENTA, COLOR_BLACK) ;
+    init_pair(BLUE, COLOR_BLUE, COLOR_BLACK) ;
+    init_pair(CYAN , COLOR_CYAN , COLOR_BLACK) ; 
+}
+
 
 void charecter_code_testing_fun(void)
 {
@@ -612,15 +626,16 @@ int main()
 
     //Set some socket options
     GameObj.sock_obj.connectToServer(serverAddress , 8888) ; 
-    
-    GameObj.sock_obj.sendData("init~~" + player_name+"~~"+player_sight+"~~") ; 
-    // GameObj.sock_obj.readData() ; 
-   
-    GameObj.initConsoleScreen("on") ; 
+
     //Initialize the snake object
     snake first_snake('A' , 'B' , 'C' , 'D' , 0 , player_name) ;
     first_snake.setPlayerSight(player_sight); 
     GameObj.setMainSnakePtr(&first_snake) ; 
+    
+    GameObj.sock_obj.sendData("init~~" + player_name+"~~"+player_sight+"~~"+"&"+to_string(first_snake.getBodyColor())+"&") ; 
+   
+    GameObj.initConsoleScreen("on") ; 
+    GameObj.initColors() ; 
     
     first_snake.init_snake_on_screen() ; 
 
