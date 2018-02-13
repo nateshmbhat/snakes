@@ -884,7 +884,7 @@ void Game::showInitialChoices()
             feat+="\nGame has two related programs , this is the Game Controller (main program) and other one is the client program which can be used to join the multiplayer mode of the game in a LAN network ." ; 
             feat+="\n\nHere are the features of the Game Controller : " ;
             feat+="\n1. Different Modes : \"Single\" or \"Multiplayer\" modes." ; 
-            feat+="\n2. Parallel Control : Parallel controlling of all the snakes in multiplayer mode without any delay. This greatly ups user."  ; 
+            feat+="\n2. Parallel Control : Parallel controlling of all the snakes in multiplayer mode without any delay. This greatly ups user experience."  ; 
             feat+="\n3. Speed Control : User can change the speed of the snakes while playing." ; 
             feat+="\n4. Scoring System : It has a scoring system for both single and multiplayer modes." ; 
             feat+= "\n5. Looping screen :  On going through the edge of screen , the snake pops out of the opposite edge." ; 
