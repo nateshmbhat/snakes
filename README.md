@@ -26,3 +26,9 @@ Features :-
 + Food generated at the server side and client side are also synced." ; 
 + On gameover of any client , the players are notified of that player's final score which is shown at the Game Controller." ; 
 + Client user can either choose to have his snake displayed in his screen in addition to the snake on the game controller or to only control the snake on game controller without anything displayed on his screen. This is useful , if the client only wants to use his keyboard as a controller." ; 
+
+
+---------------
+
+#### Implementation :
++ Used Socket programming and System calls for networking
